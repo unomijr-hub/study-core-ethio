@@ -1,0 +1,2771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyCore — Cheat Sheets, Summaries & Notes for Ethiopian Students</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --ethGreen: #078930;
+  --ethYellow: #FCDD09;
+  --ethRed: #DA121A;
+  --ethAccent: #1DB954;
+  --bg: #0A1225;
+  --card: #0F1D35;
+  --fg: #F0F4F8;
+  --muted: #8B9DBF;
+  --border: rgba(255,255,255,0.08);
+  --accent: #1DB954;
+}
+
+.light-mode {
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --fg: #0A1628;
+  --muted: #64748B;
+  --border: rgba(0,0,0,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--fg); transition: background 0.3s, color 0.3s; overflow-x: hidden; max-width: 100vw; }
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ethGreen); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes particle-rise { 0% { transform: translateY(0) scale(1); opacity: 0.4; } 100% { transform: translateY(-100vh) scale(0.5); opacity: 0; } }
+@keyframes typing-dot { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+@keyframes toast-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+.animate-on-scroll { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+.animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+.fade-in { animation: fadeIn 0.6s ease forwards; }
+.slide-up { animation: slideUp 0.6s ease forwards; }
+.scale-in { animation: scaleIn 0.5s ease forwards; }
+
+.eth-stripe { height: 4px; background: linear-gradient(90deg, #078930 33%, #FCDD09 33%, #FCDD09 66%, #DA121A 66%); border-radius: 2px; }
+
+#main-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(10,22,40,0.85); border-bottom: 1px solid var(--border); transition: all 0.3s; }
+.light-mode #main-nav { background: rgba(248,250,252,0.85); }
+.nav-container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+@media (max-width: 768px) {
+  .nav-container { padding: 0 0.75rem; height: 56px; }
+}
+@media (max-width: 480px) {
+  .nav-container { padding: 0 0.5rem; }
+}
+.nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 1.25rem; color: var(--fg); text-decoration: none; }
+.nav-logo .logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #078930, #1DB954); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: white; }
+.nav-links { display: flex; align-items: center; gap: 2rem; }
+body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibility: hidden; }
+#load-bar { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 99999; background: var(--accent); opacity: 0; transition: width 0.4s ease, opacity 0.3s ease; pointer-events: none; }
+#load-bar.active { opacity: 1; width: 85%; transition: width 8s cubic-bezier(0.1, 0.8, 0.2, 1); }
+@keyframes sc-spin { to { transform: rotate(360deg); } }
+.is-working { position: relative; pointer-events: none; }
+.is-working::after { content: ''; position: absolute; top: 50%; right: 10px; width: 18px; height: 18px; margin-top: -9px; box-sizing: border-box; border-radius: 50%; border: 3px solid #bbf7d0; border-top-color: #16a34a; background: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.9); animation: sc-spin 0.7s linear infinite; z-index: 5; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color 0.2s; }
+.nav-links a:hover { color: var(--accent); }
+.nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+.btn-icon { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.btn-icon:hover { background: var(--card); color: var(--fg); }
+.btn-primary { padding: 0.5rem 1.25rem; border-radius: 10px; background: var(--ethGreen); color: white; border: none; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-primary:hover { background: #056b24; transform: translateY(-1px); }
+.btn-ghost { padding: 0.5rem 1.25rem; border-radius: 10px; background: transparent; color: var(--muted); border: 1px solid var(--border); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-ghost:hover { background: var(--card); color: var(--fg); }
+.mobile-menu-btn { display: none; }
+
+.hero { position: relative; min-height: 100vh; display: flex; align-items: center; padding-top: 64px; overflow: hidden; }
+@media (max-width: 768px) {
+  .hero { min-height: auto; padding-top: 72px; padding-bottom: 2rem; }
+}
+@media (max-width: 480px) {
+  .hero { padding-top: 64px; }
+}
+.hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 20%, rgba(7,137,48,0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(218,18,26,0.08) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(252,221,9,0.05) 0%, transparent 50%); }
+#hero-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.particle { position: absolute; border-radius: 50%; animation: particle-rise linear infinite; }
+.hero-content { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+@media (max-width: 1024px) {
+  .hero-content { grid-template-columns: 1fr; text-align: center; gap: 2rem; padding-top: 2rem; }
+  .hero-desc { margin-left: auto; margin-right: auto; }
+  .hero-buttons { justify-content: center; }
+  .hero-stats { justify-content: center; }
+}
+@media (max-width: 768px) {
+  .hero-content { padding: 0 1rem; gap: 1.5rem; }
+}
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 999px; background: rgba(7,137,48,0.15); border: 1px solid rgba(7,137,48,0.3); color: var(--ethGreen); font-size: 0.75rem; font-weight: 600; margin-bottom: 1.5rem; }
+.hero-title { font-size: 3.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; word-wrap: break-word; overflow-wrap: break-word; hyphens: auto; }
+@media (max-width: 768px) {
+  .hero-title { font-size: clamp(1.75rem, 8vw, 2.5rem); line-height: 1.15; margin-bottom: 1rem; }
+  .hero-desc { font-size: clamp(0.875rem, 4vw, 1rem); line-height: 1.6; margin-bottom: 1.5rem; max-width: 100%; padding: 0 0.5rem; }
+  .hero-badge { font-size: 0.6875rem; padding: 0.375rem 0.75rem; margin-bottom: 1rem; }
+  .hero-buttons { flex-direction: column; gap: 0.75rem; width: 100%; padding: 0 0.5rem; }
+  .hero-buttons button { width: 100%; justify-content: center; }
+  .hero-stats { gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+  .hero-stat { min-width: 70px; }
+  .hero-stat .counter { font-size: clamp(1.25rem, 6vw, 1.5rem); }
+}
+@media (max-width: 480px) {
+  .hero-title { font-size: clamp(1.5rem, 7vw, 2rem); }
+  .hero-stats { gap: 0.75rem; }
+  .hero-stat-label { font-size: 0.625rem; }
+}
+.hero-title .gradient-text { background: linear-gradient(135deg, var(--ethGreen), var(--ethYellow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-desc { font-size: 1.125rem; color: var(--muted); line-height: 1.7; margin-bottom: 2rem; max-width: 500px; }
+.hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero-stats { display: flex; gap: 2.5rem; margin-top: 3rem; }
+.hero-stat { text-align: center; }
+.hero-stat .counter { font-size: 2rem; font-weight: 900; color: var(--ethGreen); }
+.hero-stat-label { font-size: 0.75rem; color: var(--muted); font-weight: 500; margin-top: 0.25rem; }
+.hero-visual { position: relative; display: flex; justify-content: center; align-items: center; }
+.hero-visual-inner { position: relative; width: 400px; height: 400px; }
+@media (max-width: 1024px) {
+  .hero-visual { display: none; }
+}
+.hero-ring { position: absolute; border-radius: 50%; border: 2px solid var(--border); }
+.hero-ring-1 { width: 300px; height: 300px; top: 50px; left: 50px; animation: float 6s ease-in-out infinite; }
+.hero-ring-2 { width: 360px; height: 360px; top: 20px; left: 20px; border-color: rgba(7,137,48,0.2); animation: float 8s ease-in-out infinite reverse; }
+.hero-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, rgba(7,137,48,0.2), rgba(29,185,84,0.1)); display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+.hero-float-card { position: absolute; padding: 1rem 1.25rem; border-radius: 16px; background: var(--card); border: 1px solid var(--border); backdrop-filter: blur(10px); animation: float 5s ease-in-out infinite; }
+.hero-float-card-1 { top: 20px; right: 0; animation-delay: 0s; }
+.hero-float-card-2 { bottom: 60px; left: 0; animation-delay: 1s; }
+.hero-float-card-3 { bottom: 20px; right: 40px; animation-delay: 2s; }
+
+.section { padding: 5rem 0; }
+@media (max-width: 768px) {
+  .section { padding: 3rem 0; }
+}
+@media (max-width: 480px) {
+  .section { padding: 2rem 0; }
+}
+.section-header { text-align: center; margin-bottom: 3rem; }
+.section-label { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.375rem 1rem; border-radius: 999px; background: rgba(7,137,48,0.1); border: 1px solid rgba(7,137,48,0.2); color: var(--ethGreen); font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem; }
+.section-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; }
+@media (max-width: 768px) {
+  .section-title { font-size: clamp(1.5rem, 6vw, 2rem); }
+  .section-desc { font-size: 0.875rem; padding: 0 0.5rem; }
+}
+.section-desc { color: var(--muted); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+.container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+@media (max-width: 768px) {
+  .container { padding: 0 1rem; }
+}
+@media (max-width: 480px) {
+  .container { padding: 0 0.75rem; }
+}
+
+.college-group { margin-bottom: 2.5rem; }
+.college-group:last-child { margin-bottom: 0; }
+.college-group-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.college-group-header i { color: var(--ethGreen); font-size: 1.1rem; }
+.college-group-header h3 { font-size: 1.25rem; font-weight: 800; }
+.college-group-count { margin-left: auto; font-size: 0.8rem; color: var(--muted); background: var(--border); padding: 0.25rem 0.75rem; border-radius: 999px; }
+@media (max-width: 480px) {
+  .college-group-count { margin-left: 0; }
+}
+.dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+@media (max-width: 480px) {
+  .dept-grid { grid-template-columns: 1fr; }
+}
+.dept-card { padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+.dept-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--dept-color, var(--ethGreen)); opacity: 0; transition: opacity 0.3s; }
+.dept-card:hover { transform: translateY(-4px); border-color: var(--dept-color, var(--ethGreen)); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+.dept-card:hover::before { opacity: 1; }
+.dept-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: 1rem; transition: transform 0.3s; }
+.dept-card:hover .dept-icon { transform: scale(1.1) rotate(-5deg); }
+.dept-name { font-weight: 700; font-size: 0.875rem; margin-bottom: 0.25rem; }
+.dept-count { font-size: 0.75rem; color: var(--muted); }
+
+.instructor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+@media (max-width: 640px) {
+  .instructor-grid { grid-template-columns: 1fr; }
+}
+.instructor-card { padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); text-align: center; transition: all 0.3s; }
+.instructor-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+.instructor-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(7,137,48,0.3); margin: 0 auto 1rem; }
+.instructor-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+.instructor-dept { font-size: 0.875rem; color: var(--accent); margin-bottom: 0.75rem; }
+.instructor-meta { display: flex; justify-content: center; gap: 1.5rem; font-size: 0.75rem; color: var(--muted); }
+.instructor-meta span { display: flex; align-items: center; gap: 0.375rem; }
+.star { color: #FCDD09; }
+
+.quiz-container { max-width: 700px; margin: 0 auto; padding: 2rem; border-radius: 24px; background: var(--card); border: 1px solid var(--border); }
+@media (max-width: 768px) {
+  .quiz-container { padding: 1.25rem; margin: 0 0.75rem; }
+}
+.quiz-option { padding: 0.875rem 1rem; border-radius: 12px; border: 2px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 0.75rem; transition: all 0.2s; margin-bottom: 0.5rem; }
+.quiz-option:hover { border-color: var(--accent); background: rgba(29,185,84,0.05); }
+.quiz-option.selected { border-color: var(--accent); background: rgba(29,185,84,0.08); }
+.quiz-option.correct { border-color: #078930; background: rgba(7,137,48,0.1); }
+.quiz-option.wrong { border-color: #DA121A; background: rgba(218,18,26,0.1); }
+.quiz-letter { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; transition: all 0.2s; }
+.quiz-option.selected .quiz-letter { border-color: var(--accent); background: var(--accent); color: white; }
+.quiz-option.correct .quiz-letter { border-color: #078930; background: #078930; color: white; }
+.quiz-option.wrong .quiz-letter { border-color: #DA121A; background: #DA121A; color: white; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; visibility: hidden; transition: all 0.3s; }
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal { width: 100%; max-width: 480px; border-radius: 24px; background: var(--card); border: 1px solid var(--border); padding: 2rem; transform: scale(0.95); transition: transform 0.3s; max-height: 90vh; overflow-y: auto; }
+@media (max-width: 768px) {
+  .modal { padding: 1.5rem; margin: 0 0.75rem; max-width: calc(100% - 1.5rem); border-radius: 20px; }
+}
+@media (max-width: 480px) {
+  .modal { padding: 1.25rem; border-radius: 16px; }
+}
+.modal-overlay.active .modal { transform: scale(1); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+.modal-title { font-size: 1.5rem; font-weight: 800; }
+.modal-close { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.modal-close:hover { background: rgba(218,18,26,0.1); color: var(--ethRed); }
+
+.form-group { margin-bottom: 1.25rem; }
+.form-label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--fg); }
+.form-input { width: 100%; padding: 0.875rem 1rem; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); color: var(--fg); font-size: 0.875rem; outline: none; transition: all 0.2s; font-family: inherit; }
+.form-input:focus { border-color: var(--ethGreen); }
+.form-input::placeholder { color: var(--muted); opacity: 0.5; }
+.form-select { width: 100%; padding: 0.875rem 1rem; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); color: var(--fg); font-size: 0.875rem; outline: none; transition: all 0.2s; font-family: inherit; cursor: pointer; }
+.form-select:focus { border-color: var(--ethGreen); }
+.form-error { color: var(--ethRed); font-size: 0.75rem; margin-top: 0.375rem; display: none; }
+.form-error.show { display: block; }
+
+.tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.tab { padding: 0.625rem 1.25rem; border-radius: 10px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; background: transparent; color: var(--muted); }
+.tab.active { background: rgba(7,137,48,0.15); color: var(--ethGreen); }
+.tab:hover:not(.active) { background: var(--bg); color: var(--fg); }
+
+.dashboard-sidebar { width: 280px; border-right: 1px solid var(--border); padding: 1.5rem; display: flex; flex-direction: column; }
+@media (max-width: 1024px) {
+  .dashboard-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 1rem; }
+}
+.dashboard-main { flex: 1; padding: 2rem; overflow-y: auto; }
+@media (max-width: 768px) {
+  .dashboard-main { padding: 1rem; }
+}
+.dashboard-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--ethGreen), var(--ethAccent)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: white; margin: 0 auto 1rem; }
+.dashboard-name { font-weight: 700; font-size: 1.125rem; margin-bottom: 0.25rem; text-align: center; }
+.dashboard-email { font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem; text-align: center; }
+.dashboard-badge { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.875rem; border-radius: 999px; background: rgba(7,137,48,0.1); border: 1px solid rgba(7,137,48,0.2); color: var(--ethGreen); font-size: 0.75rem; font-weight: 600; margin-bottom: 0.75rem; }
+.dash-nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.875rem; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.2s; border: none; background: transparent; width: 100%; text-align: left; }
+.dash-nav-item:hover { background: var(--bg); color: var(--fg); }
+.dash-nav-item.active { background: rgba(7,137,48,0.15); color: var(--ethGreen); }
+.dash-nav-item i { width: 20px; text-align: center; }
+
+.year-tabs { display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; }
+@media (max-width: 480px) {
+  .year-tabs { gap: 0.5rem; }
+  .year-tab { padding: 0.5rem 1rem; font-size: 0.8125rem; }
+}
+.year-tab { padding: 0.75rem 1.5rem; border-radius: 12px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.2s; border: 2px solid var(--border); background: transparent; color: var(--muted); }
+.year-tab.active { background: var(--ethGreen); color: white; border-color: var(--ethGreen); }
+.year-tab:hover:not(.active) { border-color: var(--ethGreen); color: var(--ethGreen); }
+
+.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+@media (max-width: 640px) {
+  .course-grid { grid-template-columns: 1fr; }
+}
+.course-card { padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); transition: all 0.3s; position: relative; }
+.course-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); border-color: var(--ethGreen); }
+.course-type-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: 1rem; }
+.course-type-icon.pdf { background: rgba(218,18,26,0.1); color: var(--ethRed); }
+.course-type-icon.video { background: rgba(7,137,48,0.1); color: var(--ethGreen); }
+.course-type-icon.link { background: rgba(59,130,246,0.1); color: #3B82F6; }
+.course-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; line-height: 1.4; }
+.course-meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem; }
+.course-actions { display: flex; gap: 0.5rem; }
+.course-btn { flex: 1; padding: 0.625rem; border-radius: 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; display: flex; align-items: center; justify-content: center; gap: 0.375rem; text-decoration: none; }
+.course-btn-primary { background: var(--ethGreen); color: white; }
+.course-btn-primary:hover { background: #056b24; }
+.course-btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.course-btn-ghost:hover { background: var(--bg); color: var(--fg); }
+.course-coming { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.75rem; border-radius: 999px; background: rgba(252,221,9,0.1); border: 1px solid rgba(252,221,9,0.3); color: var(--ethYellow); font-size: 0.75rem; font-weight: 600; }
+.course-admin-actions { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.375rem; opacity: 0; transition: opacity 0.2s; }
+.course-card:hover .course-admin-actions { opacity: 1; }
+.admin-btn { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; transition: all 0.2s; }
+.admin-btn:hover { background: var(--ethRed); color: white; border-color: var(--ethRed); }
+.admin-btn.edit:hover { background: var(--ethGreen); color: white; border-color: var(--ethGreen); }
+
+.add-course-form { padding: 1.5rem; border-radius: 20px; background: var(--bg); border: 2px dashed var(--border); margin-bottom: 2rem; }
+@media (max-width: 768px) {
+  .add-course-form { padding: 1rem; }
+}
+.add-course-form.active { border-color: var(--ethGreen); background: rgba(7,137,48,0.05); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+@media (max-width: 768px) {
+  .form-row, .form-row-3 { grid-template-columns: 1fr; }
+}
+
+.search-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); z-index: 100; display: flex; flex-direction: column; align-items: center; padding-top: 15vh; opacity: 0; visibility: hidden; transition: all 0.3s; }
+.search-overlay.active { opacity: 1; visibility: visible; }
+.search-box { width: 100%; max-width: 600px; padding: 0 1.5rem; }
+.search-input { width: 100%; padding: 1.25rem 1.5rem; border-radius: 16px; border: 2px solid var(--border); background: var(--card); color: var(--fg); font-size: 1.125rem; outline: none; transition: all 0.2s; }
+@media (max-width: 768px) {
+  .search-input { padding: 1rem; font-size: 1rem; }
+  .search-box { padding: 0 1rem; }
+}
+.search-input:focus { border-color: var(--ethGreen); }
+.search-results { width: 100%; max-width: 600px; margin-top: 1rem; padding: 0 1.5rem; max-height: 50vh; overflow-y: auto; }
+
+.chat-widget { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 40; }
+.chat-toggle { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--ethGreen), var(--ethAccent)); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; box-shadow: 0 10px 30px rgba(7,137,48,0.3); transition: all 0.3s; }
+.chat-toggle:hover { transform: scale(1.1); }
+.chat-window { position: absolute; bottom: 70px; right: 0; width: 360px; height: 480px; border-radius: 24px; background: var(--card); border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.3s; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+@media (max-width: 480px) {
+  .chat-window { width: calc(100vw - 2rem); right: -0.5rem; height: 70vh; border-radius: 20px; }
+}
+.chat-window.active { opacity: 1; visibility: visible; transform: translateY(0); }
+.chat-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; }
+.chat-header-icon { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--ethGreen), var(--ethAccent)); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem; }
+.chat-header-text { flex: 1; }
+.chat-header-title { font-weight: 700; font-size: 0.875rem; }
+.chat-header-status { font-size: 0.75rem; color: var(--ethGreen); display: flex; align-items: center; gap: 0.375rem; }
+.chat-header-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ethGreen); }
+.chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.chat-bubble { padding: 0.875rem 1rem; border-radius: 16px; max-width: 85%; font-size: 0.875rem; line-height: 1.5; }
+.chat-bubble-user { background: var(--ethGreen); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-bubble-ai { background: var(--bg); color: var(--fg); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+.chat-input-area { padding: 1rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; }
+.chat-input { flex: 1; padding: 0.75rem 1rem; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); font-size: 0.875rem; outline: none; font-family: inherit; }
+.chat-input:focus { border-color: var(--ethGreen); }
+.chat-send { width: 40px; height: 40px; border-radius: 12px; background: var(--ethGreen); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.chat-send:hover { background: #056b24; }
+.typing-indicator { display: flex; gap: 0.25rem; padding: 0.75rem 1rem; }
+.typing-indicator .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: typing-dot 1.4s infinite; }
+.typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+
+#toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 200; display: flex; flex-direction: column; gap: 0.75rem; }
+.toast { padding: 1rem 1.25rem; border-radius: 16px; display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; font-weight: 600; animation: toast-in 0.4s ease; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.toast-success { background: rgba(7,137,48,0.15); border: 1px solid rgba(7,137,48,0.3); color: var(--ethGreen); }
+.toast-warning { background: rgba(252,221,9,0.15); border: 1px solid rgba(252,221,9,0.3); color: var(--ethYellow); }
+.toast-error { background: rgba(218,18,26,0.15); border: 1px solid rgba(218,18,26,0.3); color: var(--ethRed); }
+.toast-info { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); color: #3B82F6; }
+
+.footer { border-top: 1px solid var(--border); padding: 3rem 0 1.5rem; }
+.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+@media (max-width: 640px) {
+  .footer-grid { grid-template-columns: 1fr; text-align: center; }
+  .footer-contact { justify-content: center; }
+  .footer-newsletter-form { flex-direction: column; }
+}
+.footer-title { font-weight: 700; font-size: 0.875rem; margin-bottom: 1rem; color: var(--fg); }
+.footer-link { display: block; color: var(--muted); text-decoration: none; font-size: 0.875rem; padding: 0.375rem 0; transition: all 0.2s; }
+.footer-link:hover { color: var(--ethGreen); transform: translateX(4px); }
+.footer-contact { display: flex; align-items: center; gap: 0.75rem; color: var(--muted); font-size: 0.875rem; margin-bottom: 0.75rem; }
+.footer-contact i { color: var(--ethGreen); width: 16px; }
+.footer-newsletter { margin-top: 1rem; }
+.footer-newsletter-text { font-size: 0.75rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--fg); }
+.footer-newsletter-form { display: flex; gap: 0.5rem; }
+.footer-newsletter-input { flex: 1; padding: 0.625rem 0.875rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); font-size: 0.75rem; outline: none; font-family: inherit; }
+.footer-newsletter-input:focus { border-color: var(--ethGreen); }
+.footer-newsletter-btn { padding: 0.625rem 1rem; border-radius: 10px; background: var(--ethGreen); color: white; border: none; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.footer-newsletter-btn:hover { background: #056b24; }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 1rem; }
+.footer-copy { font-size: 0.75rem; color: var(--muted); }
+.footer-legal { display: flex; gap: 1.5rem; }
+.footer-legal a { font-size: 0.75rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.footer-legal a:hover { color: var(--ethGreen); text-decoration: underline; }
+
+@media (max-width: 1024px) {
+  .hero-content { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+  .hero-desc { margin: 0 auto 2rem; }
+  .hero-buttons { justify-content: center; }
+  .hero-stats { justify-content: center; }
+  .hero-visual { display: none; }
+  #dashboard-view { flex-direction: column; }
+  .dashboard-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+}
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .mobile-menu-btn { display: flex; }
+  .hero-title { font-size: 2.5rem; }
+  .section-title { font-size: 1.75rem; }
+  .form-row, .form-row-3 { grid-template-columns: 1fr; }
+  .chat-window { width: calc(100vw - 2rem); right: -1rem; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .year-tabs { justify-content: center; }
+
+  /* Mobile navbar fixes */
+  .nav-container { padding: 0 0.75rem; height: 56px; }
+  .nav-logo { font-size: 1rem; gap: 0.5rem; }
+  .nav-logo .logo-icon { width: 32px; height: 32px; font-size: 0.875rem; }
+  .nav-actions { gap: 0.5rem; }
+  .btn-icon { width: 38px; height: 38px; }
+  .btn-primary { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+  .btn-ghost { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+  #nav-login-btn, #nav-register-btn, #nav-dashboard-btn, #nav-logout-btn { 
+    padding: 0.375rem 0.625rem; 
+    font-size: 0.75rem; 
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-logo span { display: none; }
+  .nav-logo .logo-icon { margin-right: 0; }
+}
+
+.hidden { display: none !important; }
+.mr-2 { margin-right: 0.5rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.w-full { width: 100%; }
+.text-center { text-align: center; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="auth-pending">
+<div id="load-bar"></div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- NAVBAR -->
+<nav id="main-nav">
+  <div class="nav-container">
+    <a href="#" class="nav-logo" onclick="showHome(); return false;">
+      <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+      <span>StudyCore</span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="#home" onclick="scrollToSection('home'); return false;">Home</a>
+      <a href="#departments" onclick="scrollToSection('departments'); return false;">Streams</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-icon" onclick="toggleSearch()" title="Search"><i class="fas fa-search"></i></button>
+      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Theme"><i id="theme-icon" class="fas fa-moon"></i></button>
+      <button id="nav-login-btn" class="btn-ghost" onclick="openModal('login-modal')" style="padding: 0.5rem 0.875rem;">Log In</button>
+      <button id="nav-register-btn" class="btn-primary" onclick="openModal('login-modal'); switchAuthTab('register');" style="padding: 0.5rem 0.875rem;">Sign Up</button>
+      <button id="nav-dashboard-btn" class="btn-primary hidden" onclick="showDashboard()" style="padding: 0.5rem 0.875rem;">Dashboard</button>
+      <button id="nav-logout-btn" class="btn-ghost hidden" onclick="handleLogout()" style="padding: 0.5rem 0.875rem;">Logout</button>
+      <button class="btn-icon mobile-menu-btn" onclick="toggleMobileMenu()" id="menu-btn"><i id="menu-icon" class="fas fa-bars"></i></button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden" style="border-top: 1px solid var(--border); padding: 1rem 1.5rem;">
+    <a href="#home" class="footer-link" onclick="scrollToSection('home'); toggleMobileMenu(); return false;">Home</a>
+    <a href="#departments" class="footer-link" onclick="scrollToSection('departments'); toggleMobileMenu(); return false;">Streams</a>
+  </div>
+</nav>
+
+<!-- SEARCH OVERLAY -->
+<div id="search-overlay" class="search-overlay">
+  <div class="search-box">
+    <input type="text" id="search-input" class="search-input" placeholder="Search streams and courses..." oninput="handleSearch(this.value)">
+  </div>
+  <div id="search-results" class="search-results"></div>
+  <button class="btn-icon" style="position: absolute; top: 1.5rem; right: 1.5rem;" onclick="toggleSearch()"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main-content">
+
+<!-- HERO -->
+<section id="home" class="hero">
+  <div class="hero-bg"></div>
+  <div id="hero-particles"></div>
+  <div class="hero-content">
+    <div class="fade-in">
+      <div class="hero-badge"><i class="fas fa-star" style="color: var(--ethYellow);"></i> Cheat sheets, summaries &amp; detailed notes</div>
+      <h1 class="hero-title">Learn Without <span class="gradient-text">Limits</span></h1>
+      <p class="hero-desc">Study smarter with a cheat sheet, a summary and a detailed explanation for every Social Science and Natural Science course, organized by semester.</p>
+      <div class="hero-buttons">
+        <button class="btn-primary" style="padding: 0.875rem 2rem; font-size: 1rem;" onclick="openModal('login-modal'); switchAuthTab('register');"><i class="fas fa-rocket mr-2"></i> Get Started</button>
+        <button class="btn-ghost" style="padding: 0.875rem 2rem; font-size: 1rem;" onclick="scrollToSection('departments')"><i class="fas fa-compass mr-2"></i> Explore</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="counter" id="stat-courses" data-target="0">0+</div><div class="hero-stat-label">Courses</div></div>
+        <div class="hero-stat"><div class="counter" id="stat-departments" data-target="0" data-suffix="">0</div><div class="hero-stat-label">Streams</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-visual-inner">
+        <div class="hero-ring hero-ring-1"></div>
+        <div class="hero-ring hero-ring-2"></div>
+        <div class="hero-center"><i class="fas fa-book-open" style="color: var(--ethGreen);"></i></div>
+        <div class="hero-float-card hero-float-card-1">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(7,137,48,0.15); display: flex; align-items: center; justify-content: center; color: var(--ethGreen);"><i class="fas fa-check"></i></div>
+            <div><div style="font-weight: 700; font-size: 0.875rem;">Cheat Sheets</div><div style="font-size: 0.75rem; color: var(--muted);">Quick revision</div></div>
+          </div>
+        </div>
+        <div class="hero-float-card hero-float-card-2">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(252,221,9,0.15); display: flex; align-items: center; justify-content: center; color: var(--ethYellow);"><i class="fas fa-trophy"></i></div>
+            <div><div style="font-weight: 700; font-size: 0.875rem;">Quizzes</div><div style="font-size: 0.75rem; color: var(--muted);">Instant results</div></div>
+          </div>
+        </div>
+        <div class="hero-float-card hero-float-card-3">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(218,18,26,0.15); display: flex; align-items: center; justify-content: center; color: var(--ethRed);"><i class="fas fa-users"></i></div>
+            <div><div style="font-weight: 700; font-size: 0.875rem;">Detailed Notes</div><div style="font-size: 0.75rem; color: var(--muted);">Full explanations</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPARTMENTS -->
+<section id="departments" class="section">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <div class="section-label"><i class="fas fa-th-large"></i> Streams</div>
+      <h2 class="section-title">Choose Your Stream</h2>
+      <p class="section-desc">Two streams with two semesters each — Social Science and Natural Science.</p>
+    </div>
+    <div id="dept-grid" class="dept-grid"></div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="eth-stripe" style="margin-bottom: 1.5rem;"></div>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-title">Quick Links</div>
+        <a href="#home" class="footer-link" onclick="scrollToSection('home'); return false;">Home</a>
+        <a href="#departments" class="footer-link" onclick="scrollToSection('departments'); return false;">Streams</a>
+      </div>
+      <div>
+        <div class="footer-title">Streams</div>
+        <div id="footer-dept-links"></div>
+      </div>
+      <div>
+        <div class="footer-title">Contact Us</div>
+        <div class="footer-contact"><i class="fas fa-envelope"></i> unomijr@gmail.com</div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">2026 StudyCore. All rights reserved. Made with pride in Ethiopia.</p>
+    </div>
+  </div>
+</footer>
+
+</div><!-- end main-content -->
+
+<!-- DASHBOARD VIEW -->
+<div id="dashboard-view" class="hidden" style="min-height: 100vh; padding-top: 64px; display: flex;">
+  <aside class="dashboard-sidebar" id="dash-sidebar">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <div class="dashboard-avatar" id="dash-avatar">AB</div>
+      <div class="dashboard-name" id="dash-name">Eliyas</div>
+      <div class="dashboard-email" id="dash-email">abebe@email.com</div>
+      <div class="dashboard-badge" id="dash-year-badge"><i class="fas fa-user-graduate"></i> <span id="dash-year-text">Semester 1</span></div>
+      <div class="dashboard-badge" id="dash-dept-badge" style="background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); color: #3B82F6;"><i class="fas fa-building"></i> <span id="dash-dept-text">Social Science</span></div>
+      <button class="dashboard-badge" id="premium-badge" onclick="openPremiumModal()" style="cursor: pointer; width: 100%; justify-content: center; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"><i class="fas fa-lock"></i> <span id="premium-text">Free</span></button>
+    </div>
+    <nav style="display: flex; flex-direction: column; gap: 0.25rem; flex: 1;">
+      <button class="dash-nav-item active" onclick="switchDashTab('courses')" data-tab="courses"><i class="fas fa-book"></i> My Courses</button>
+      <button class="dash-nav-item" onclick="switchDashTab('progress')" data-tab="progress"><i class="fas fa-chart-line"></i> Progress</button>
+      <button class="dash-nav-item" onclick="switchDashTab('settings')" data-tab="settings"><i class="fas fa-cog"></i> Settings</button>
+      <button class="dash-nav-item hidden" id="admin-nav-item" onclick="switchDashTab('admin')" data-tab="admin"><i class="fas fa-shield-alt"></i> Admin Panel</button>
+    </nav>
+    <div id="sidebar-upgrade" style="padding: 1rem; margin: 1rem 0; border-radius: 16px; background: linear-gradient(135deg, rgba(7,137,48,0.15), rgba(29,185,84,0.05)); border: 1px solid rgba(7,137,48,0.3); text-align: center;">
+      <p style="font-size: 0.75rem; color: var(--ethGreen); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fas fa-crown" style="margin-right: 0.25rem;"></i>Upgrade</p>
+      <p style="font-size: 0.875rem; color: var(--fg); font-weight: 600; margin-bottom: 0.75rem;">Unlock all materials for 100 ETB</p>
+      <button class="btn-primary w-full" onclick="openPremiumModal()" style="padding: 0.625rem; font-size: 0.875rem;"><i class="fas fa-unlock mr-2"></i> Pay Now</button>
+    </div>
+    <div style="padding-top: 1rem;">
+      <button class="btn-ghost w-full" onclick="showHome()" style="margin-bottom: 0.5rem;"><i class="fas fa-home mr-2"></i> Back to Home</button>
+      <button class="btn-ghost w-full" style="color: var(--ethRed); border-color: rgba(218,18,26,0.2);" onclick="handleLogout()"><i class="fas fa-sign-out-alt mr-2"></i> Logout</button>
+    </div>
+  </aside>
+
+  <main class="dashboard-main" id="dash-main">
+    <!-- COURSES TAB -->
+    <div id="dash-courses" class="dash-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">My Courses</h2>
+          <p style="color: var(--muted); font-size: 0.875rem;">Cheat sheets, summaries and detailed explanations, organized by semester</p>
+        </div>
+        <button id="admin-add-btn" class="btn-primary hidden" onclick="toggleAddCourseForm()"><i class="fas fa-plus mr-2"></i> Add Course</button>
+      </div>
+
+      <!-- Add Course Form (materials are added afterwards, from the course card) -->
+      <div id="add-course-form" class="add-course-form hidden">
+        <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-plus-circle" style="color: var(--ethGreen); margin-right: 0.5rem;"></i> Add New Course</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Stream</label>
+            <select id="add-dept" class="form-select"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Semester</label>
+            <select id="add-year" class="form-select">
+              <option value="1">Semester 1</option>
+              <option value="2">Semester 2</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Course Title</label>
+          <input type="text" id="add-title" class="form-input" placeholder="e.g., Introduction to Psychology">
+          <div class="form-error" id="add-title-error">Please enter a course title</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description (optional)</label>
+          <input type="text" id="add-desc" class="form-input" placeholder="Brief description of the course">
+        </div>
+        <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem;">After the course is created, open it with <strong>View Course</strong> to upload its cheat sheet, summary and detailed explanation.</p>
+        <div style="display: flex; gap: 0.75rem;">
+          <button class="btn-primary" id="add-course-submit-btn" onclick="submitAddCourse()"><i class="fas fa-check mr-2"></i> Add Course</button>
+          <button class="btn-ghost" onclick="toggleAddCourseForm()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Admin-only: browse any stream's courses (backend already
+           allows this for admins; this just exposes it in the UI) -->
+      <div id="admin-dept-switcher" class="hidden" style="margin-bottom: 1rem;">
+        <label class="form-label" style="display: block; margin-bottom: 0.375rem;">Viewing Stream (admin)</label>
+        <select id="admin-dept-select" class="form-select" style="max-width: 320px;" onchange="switchViewDept(this.value)"></select>
+      </div>
+
+      <!-- Semester Tabs -->
+      <div class="year-tabs" id="year-tabs">
+        <button class="year-tab active" onclick="switchYearTab(1)" data-year="1">Semester 1</button>
+        <button class="year-tab" onclick="switchYearTab(2)" data-year="2">Semester 2</button>
+      </div>
+
+      <!-- Course Grid -->
+      <div id="dash-course-grid" class="course-grid"></div>
+
+      <!-- Empty State -->
+      <div id="course-empty" class="hidden text-center" style="padding: 3rem;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2rem; color: var(--muted);"><i class="fas fa-book-open"></i></div>
+        <h3 style="font-weight: 700; margin-bottom: 0.5rem;">No courses yet</h3>
+        <p style="color: var(--muted); font-size: 0.875rem; max-width: 400px; margin: 0 auto;">Courses for this semester will appear here. Check back later.</p>
+      </div>
+    </div>
+
+    <!-- PROGRESS TAB -->
+    <div id="dash-progress" class="dash-content hidden">
+      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">My Progress</h2>
+      <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem;">Track your learning journey</p>
+      <div id="progress-stats" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;"></div>
+      <div id="progress-course-list" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+    </div>
+
+    <!-- ADMIN TAB (only visible to admin) -->
+    <div id="dash-admin" class="dash-content hidden">
+      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Admin Panel</h2>
+      <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem;">Review payments and manage users</p>
+
+      <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); margin-bottom: 1.5rem;">
+        <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-crown" style="color: var(--ethYellow); margin-right: 0.5rem;"></i>Pending Payments</h3>
+        <div id="admin-payments-list" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+      </div>
+
+      <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); margin-bottom: 1.5rem;">
+        <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-sign-out-alt" style="color: #3B82F6; margin-right: 0.5rem;"></i>Force Logout</h3>
+        <p style="font-size: 0.875rem; color: var(--muted); margin-bottom: 1rem;">Immediately end a user's active session on every device (e.g. suspected account sharing).</p>
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">User Email</label>
+            <input type="email" id="admin-forcelogout-email" class="form-input" placeholder="user@email.com">
+          </div>
+          <div style="display: flex; align-items: flex-end; padding-bottom: 1.25rem;">
+            <button class="btn-primary" onclick="adminForceLogoutByEmail()" style="padding: 0.875rem 1.5rem; background: #3B82F6;"><i class="fas fa-sign-out-alt mr-2"></i> Force Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border);">
+        <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-users" style="color: var(--ethGreen); margin-right: 0.5rem;"></i>All Registered Users</h3>
+        <div id="admin-users-list" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="dash-settings" class="dash-content hidden">
+      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Settings</h2>
+      <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem;">Manage your account preferences</p>
+      <div style="max-width: 500px;">
+        <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); margin-bottom: 1rem;">
+          <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-user" style="color: var(--ethGreen); margin-right: 0.5rem;"></i> Profile</h3>
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="settings-name" class="form-input" value="Eliyas">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" id="settings-email" class="form-input" value="abebe@email.com" disabled style="opacity: 0.5;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stream</label>
+            <select id="settings-dept" class="form-select"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Semester</label>
+            <select id="settings-year" class="form-select">
+              <option value="1">Semester 1</option>
+              <option value="2">Semester 2</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="saveSettings()"><i class="fas fa-save mr-2"></i> Save Changes</button>
+        </div>
+        <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border);">
+          <h3 style="font-weight: 700; margin-bottom: 1rem; color: var(--ethRed);"><i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i> Danger Zone</h3>
+          <button class="btn-ghost" style="color: var(--ethRed); border-color: rgba(218,18,26,0.2);" onclick="deleteAccount()"><i class="fas fa-trash mr-2"></i> Delete Account</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- LOGIN / REGISTER MODAL -->
+<div id="login-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="auth-modal-title">Welcome Back</div>
+        <p style="font-size: 0.875rem; color: var(--muted); margin-top: 0.25rem;">StudyCore</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('login-modal')"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- Auth Tabs -->
+    <div class="tabs">
+      <button class="tab active" id="tab-login" onclick="switchAuthTab('login')">Log In</button>
+      <button class="tab" id="tab-register" onclick="switchAuthTab('register')">Sign Up</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="form-login" onsubmit="event.preventDefault(); handleLogin();">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="login-email" class="form-input" placeholder="your@email.com" required>
+        <div class="form-error" id="login-email-error">Invalid email or password</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required>
+      </div>
+      <p style="text-align: right; font-size: 0.75rem; margin-bottom: 0.75rem;"><a href="#" onclick="showForgotPasswordForm(); return false;" style="color: var(--muted); text-decoration: none;">Forgot password?</a></p>
+      <button type="submit" class="btn-primary w-full" style="padding: 0.875rem; margin-bottom: 0.75rem;"><i class="fas fa-sign-in-alt mr-2"></i> Log In</button>
+      <p style="text-align: center; font-size: 0.75rem; color: var(--muted);">Don't have an account? <a href="#" onclick="switchAuthTab('register'); return false;" style="color: var(--ethGreen); text-decoration: none;">Sign up</a></p>
+    </form>
+
+    <!-- FORGOT PASSWORD: REQUEST STEP -->
+    <div id="forgot-request-step" class="hidden">
+      <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 1rem;">Enter your account email and we'll send you a link to reset your password.</p>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="forgot-email" class="form-input" placeholder="your@email.com">
+      </div>
+      <button type="button" class="btn-primary w-full" style="padding: 0.875rem; margin-bottom: 0.5rem;" onclick="handleRequestPasswordReset()"><i class="fas fa-paper-plane mr-2"></i> Send Reset Link</button>
+      <button type="button" class="btn-ghost w-full" style="padding: 0.875rem;" onclick="switchAuthTab('login')"><i class="fas fa-arrow-left mr-2"></i> Back to Login</button>
+    </div>
+
+    <!-- FORGOT PASSWORD: SET NEW PASSWORD STEP (reached via the real email link) -->
+    <div id="reset-password-step" class="hidden">
+      <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 1rem;">Choose a new password for your account.</p>
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" id="reset-password-input" class="form-input" placeholder="At least 6 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm New Password</label>
+        <input type="password" id="reset-confirm-input" class="form-input" placeholder="Re-enter password">
+        <div class="form-error" id="reset-password-error">Passwords do not match</div>
+      </div>
+      <button type="button" class="btn-primary w-full" style="padding: 0.875rem;" onclick="handleResetPassword()"><i class="fas fa-key mr-2"></i> Set New Password</button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <form id="form-register" class="hidden" onsubmit="event.preventDefault(); handleRegister();">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="reg-name" class="form-input" placeholder="Eliyas" required>
+        <div class="form-error" id="reg-name-error">Please enter your full name</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="reg-email" class="form-input" placeholder="your@email.com" required>
+        <div class="form-error" id="reg-email-error">Please enter a valid email</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Stream</label>
+          <select id="reg-dept" class="form-select" required onchange="updateRegYearOptions()"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Semester</label>
+          <select id="reg-year" class="form-select" required>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="reg-password" class="form-input" placeholder="Min 6 characters" required minlength="6">
+        <div class="form-error" id="reg-password-error">Password must be at least 6 characters</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" id="reg-confirm" class="form-input" placeholder="Repeat password" required>
+        <div class="form-error" id="reg-confirm-error">Passwords do not match</div>
+      </div>
+      <button type="submit" class="btn-primary w-full" style="padding: 0.875rem; margin-bottom: 0.75rem;"><i class="fas fa-user-plus mr-2"></i> Create Account</button>
+      <p style="text-align: center; font-size: 0.75rem; color: var(--muted);">Already have an account? <a href="#" onclick="switchAuthTab('login'); return false;" style="color: var(--ethGreen); text-decoration: none;">Log in</a></p>
+    </form>
+
+    <!-- VERIFICATION STEP (hidden initially) -->
+    <div id="verify-step" class="hidden">
+      <div style="text-align: center; padding: 1rem 0;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(7,137,48,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; color: var(--ethGreen);"><i class="fas fa-envelope-open-text"></i></div>
+        <h3 style="font-weight: 700; margin-bottom: 0.5rem;">Check Your Email</h3>
+        <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 1.5rem;">We've sent a verification link to <strong id="verify-email-display">your@email.com</strong>. Click the link in that email, then come back and log in.</p>
+        <p style="color: var(--muted); font-size: 0.8125rem; margin: -0.75rem 0 1.5rem;"><i class="fas fa-circle-info" style="margin-right: 0.35rem;"></i>Can't find it? Check your <strong>Spam</strong> or <strong>Junk</strong> folder too.</p>
+        <button class="btn-primary w-full" style="padding: 0.875rem; margin-bottom: 0.5rem;" onclick="closeModal('login-modal'); switchAuthTab('login');"><i class="fas fa-check-circle mr-2"></i> Got it, go to Login</button>
+        <button class="btn-ghost w-full" style="padding: 0.875rem;" onclick="resendCode()"><i class="fas fa-redo mr-2"></i> Resend Verification Email</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PREMIUM / PAYMENT MODAL -->
+<div id="premium-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 520px;">
+    <style>
+      @media (max-width: 768px) {
+        #premium-modal .modal { max-width: calc(100% - 1.5rem) !important; padding: 1.25rem !important; }
+      }
+    </style>
+    <div class="modal-header">
+      <div>
+        <div class="modal-title"><i class="fas fa-crown" style="color: var(--ethYellow); margin-right: 0.5rem;"></i>Unlock Full Access</div>
+        <p style="font-size: 0.875rem; color: var(--muted); margin-top: 0.25rem;">One-time payment. Lifetime access.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('premium-modal')"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div style="padding: 1.25rem; border-radius: 16px; background: linear-gradient(135deg, rgba(7,137,48,0.1), rgba(29,185,84,0.05)); border: 1px solid rgba(7,137,48,0.2); margin-bottom: 1.5rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+        <div>
+          <p style="font-size: 0.75rem; color: var(--ethGreen); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Premium Plan</p>
+          <p style="font-size: 2rem; font-weight: 900; color: var(--fg);">100 <span style="font-size: 1rem; color: var(--muted);">ETB</span></p>
+        </div>
+        <div style="padding: 0.5rem 1rem; border-radius: 999px; background: rgba(7,137,48,0.15); color: var(--ethGreen); font-size: 0.75rem; font-weight: 700;">One-Time</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Both semesters (1 and 2)</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Cheat sheet, summary and detailed explanation for every course</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Practice quizzes with instant results</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Progress tracking</div>
+      </div>
+    </div>
+
+    <div style="padding: 1rem; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); margin-bottom: 1.5rem;">
+      <p style="font-size: 0.75rem; font-weight: 700; color: var(--fg); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>Payment Methods</p>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 10px; background: var(--card); border: 1px solid var(--border);">
+          <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(7,137,48,0.15); display: flex; align-items: center; justify-content: center; color: var(--ethGreen); font-size: 1rem;"><i class="fas fa-mobile-alt"></i></div>
+          <div style="flex: 1;">
+            <p style="font-weight: 700; font-size: 0.875rem; color: var(--fg);">Telebirr</p>
+            <p style="font-size: 0.75rem; color: var(--muted);">Send 100 ETB to: <strong style="color: var(--fg);">0966211851</strong> | Name: Abenezer Girma</p>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 10px; background: var(--card); border: 1px solid var(--border);">
+          <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(59,130,246,0.15); display: flex; align-items: center; justify-content: center; color: #3B82F6; font-size: 1rem;"><i class="fas fa-university"></i></div>
+          <div style="flex: 1;">
+            <p style="font-weight: 700; font-size: 0.875rem; color: var(--fg);">Commercial Bank of Ethiopia (CBE)</p>
+            <p style="font-size: 0.75rem; color: var(--muted);">Account: <strong style="color: var(--fg);">1000757431479</strong> | Name: Abenezer Girma</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form onsubmit="handlePaymentSubmit(event)">
+      <div class="form-group">
+        <label class="form-label"><i class="fas fa-receipt" style="margin-right: 0.25rem;"></i>Payment Method Used</label>
+        <select id="pay-method" class="form-select" required>
+          <option value="">Select method...</option>
+          <option value="telebirr">Telebirr</option>
+          <option value="bank_transfer">Commercial Bank of Ethiopia (CBE)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"><i class="fas fa-image" style="margin-right: 0.25rem;"></i>Payment Screenshot</label>
+        <input type="file" id="pay-screenshot" accept="image/*,.pdf" class="form-input" required style="padding: 0.5rem;">
+        <p style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;">JPG, PNG, WebP, or PDF — screenshot of payment confirmation</p>
+      </div>
+
+      <button type="submit" id="pay-submit-btn" class="btn-primary w-full" style="padding: 0.875rem; margin-bottom: 0.75rem;">
+        <i class="fas fa-paper-plane mr-2"></i> Submit Payment Proof
+      </button>
+
+      <p style="text-align: center; font-size: 0.75rem; color: var(--muted);">
+        <i class="fas fa-clock" style="margin-right: 0.25rem;"></i>Activated within 24 hours after verification
+      </p>
+    </form>
+  </div>
+</div>
+
+<!-- QUIZ TAKING MODAL -->
+<div id="pdf-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 900px; width: 95vw; max-height: 92vh; display: flex; flex-direction: column;">
+    <div class="modal-header">
+      <div class="modal-title" id="pdf-modal-title"><i class="fas fa-file-pdf" style="margin-right: 0.5rem;"></i>Document</div>
+      <button class="modal-close" onclick="closePdfViewer()"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="pdf-viewer-body" oncontextmenu="return false" style="position: relative; overflow-y: auto; flex: 1; user-select: none; -webkit-user-select: none; background: var(--bg); padding: 0.5rem;"></div>
+  </div>
+</div>
+
+<div id="quiz-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 640px; max-height: 85vh; overflow-y: auto;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="quiz-modal-title"><i class="fas fa-clipboard-question" style="margin-right: 0.5rem;"></i>Quiz</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('quiz-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="quiz-modal-body"></div>
+  </div>
+</div>
+
+<!-- QUIZ BUILDER MODAL (admin) -->
+<div id="quiz-builder-modal" class="modal-overlay">
+  <div class="modal" style="max-width: 640px; max-height: 85vh; overflow-y: auto;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title"><i class="fas fa-graduation-cap" style="margin-right: 0.5rem;"></i>Build Quiz</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('quiz-builder-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <input type="hidden" id="qb-course-id">
+    <div class="form-group">
+      <label class="form-label">Quiz Title</label>
+      <input type="text" id="qb-title" class="form-input" placeholder="e.g. Chapter 1 Quiz">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Passing Score (%)</label>
+      <input type="number" id="qb-passing" class="form-input" value="60" min="1" max="100">
+    </div>
+    <div id="qb-questions"></div>
+    <button type="button" class="btn-ghost w-full" style="padding: 0.75rem; margin-bottom: 1rem;" onclick="addBuilderQuestion()"><i class="fas fa-plus mr-2"></i> Add Question</button>
+    <button type="button" class="btn-primary w-full" style="padding: 0.875rem;" onclick="submitQuizBuilder()"><i class="fas fa-check mr-2"></i> Create Quiz</button>
+  </div>
+</div>
+
+<!-- CHAT WIDGET -->
+<div class="chat-widget">
+  <button class="chat-toggle" onclick="toggleChat()" id="chat-toggle-btn"><i id="chat-toggle-icon" class="fas fa-robot"></i></button>
+  <div class="chat-window" id="chat-window">
+    <div class="chat-header">
+      <div class="chat-header-icon"><i class="fas fa-robot"></i></div>
+      <div class="chat-header-text">
+        <div class="chat-header-title">StudyCore Assistant</div>
+        <div class="chat-header-status">Online</div>
+      </div>
+      <button class="btn-icon" style="width: 32px; height: 32px;" onclick="toggleChat()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-bubble chat-bubble-ai">Hi! I'm the StudyCore helper. Ask me about courses, materials, quizzes or payment.</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chat-input" placeholder="Type your question..." onkeypress="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+// The two streams. (The variable keeps its old internal name `departments`;
+// users only ever see the word "Stream".)
+const departments = [
+  { name: "Social Science", icon: "fa-users", color: "#6366F1", college: "Social Science" },
+  { name: "Natural Science", icon: "fa-flask", color: "#1DB954", college: "Natural Science" }
+];
+
+const PREMIUM_PRICE_ETB = 100;
+
+// Course catalogue used for the course counts and the search box. Keep this
+// in sync with COURSES in the backend's prisma/seed.js. Courses an admin adds
+// later still show up in the dashboard; they just are not in this list.
+const CATALOG = {
+  "Social Science": {
+    1: ["Global Trends", "Entrepreneurship", "Moral and Civics", "Emerging Technology", "Anthropology", "Economics", "English"],
+    2: ["Maths", "Critical Thinking & Logic", "Inclusiveness", "History", "Communicative English", "Psychology", "Geography", "Physical Fitness"]
+  },
+  "Natural Science": {
+    1: ["English", "Logic", "Psychology", "History", "Geography", "Maths", "Physics"],
+    2: ["Anthropology", "Civics", "Entrepreneurship", "Emerging Technology", "Computer Programming", "Applied Maths", "English 2", "Physical Fitness"]
+  }
+};
+
+// The three study materials every course can have (one file or link each).
+const MATERIAL_SLOTS = [
+  { kind: 'cheat_sheet', label: 'Cheat Sheet', icon: 'fa-bolt', hint: 'Key points for quick revision' },
+  { kind: 'summary', label: 'Summary', icon: 'fa-list-check', hint: 'A short overview of the course' },
+  { kind: 'detailed', label: 'Detailed Explanation', icon: 'fa-book-open', hint: 'Full explanation of every topic' }
+];
+
+const chatResponses = {
+  "course": "StudyCore has two streams, Social Science and Natural Science, with two semesters each. Every course has a cheat sheet, a summary and a detailed explanation. Log in and open your stream from the dashboard to see them.",
+  "exam": "Each course can have practice quizzes. You answer all the questions, submit once, and see your score and which answers were right or wrong straight away. Passing a quiz marks that course as completed.",
+  "pay": "Premium costs 100 ETB, paid once. Open the Pay Now button in your dashboard, send the money by Telebirr or CBE, then upload a screenshot of the payment. We activate your account after checking it.",
+  "default": "I can answer questions about courses, quizzes and payment. Try asking about 'courses', 'quizzes' or 'payment'."
+};
+
+// ===== STATE =====
+let currentUser = null;
+let isDark = true;
+let currentYear = 1;
+let currentViewDept = null; // admins can browse other departments; students always see their own
+let currentDashTab = 'courses';
+let quizAnswers = {};
+let pendingRegistration = null;
+
+// ===== REAL BACKEND API LAYER =====
+// Replaces the old localStorage-based fake auth/data with real calls to
+// the deployed StudyCore backend. accessToken lives in memory only
+// (never localStorage) — the refresh token is a separate httpOnly cookie
+// the browser sends automatically, which is what actually keeps you
+// logged in across page reloads (see restoreSession() below).
+// IMPORTANT: replace this with YOUR backend's address (from Render) once the
+// backend is deployed, e.g. 'https://studycore-api.onrender.com/api/v1'.
+const API_BASE = 'https://study-core-eth.onrender.com/api/v1';
+let accessToken = null;
+
+// Remember which button/tab/card the person just pressed, so the spinner
+// appears ON that control (not as a cursor change on the whole page).
+let lastPressed = null, lastPressedAt = 0;
+const workingEls = new Set();
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('button, .course-btn, .dash-nav-item, .dept-card, a[onclick]');
+  if (el) { lastPressed = el; lastPressedAt = Date.now(); }
+}, true);
+
+let pendingRequests = 0;
+function setLoading(on) {
+  pendingRequests = Math.max(0, pendingRequests + (on ? 1 : -1));
+  if (on && lastPressed && Date.now() - lastPressedAt < 600 && !lastPressed.classList.contains('modal-close')) {
+    lastPressed.classList.add('is-working');
+    workingEls.add(lastPressed);
+  }
+  if (pendingRequests === 0) {
+    workingEls.forEach(el => el.classList.remove('is-working'));
+    workingEls.clear();
+  }
+  const bar = document.getElementById('load-bar');
+  if (!bar) return;
+  if (pendingRequests > 0) {
+    bar.style.transition = 'none'; bar.style.width = '0'; bar.classList.remove('active');
+    void bar.offsetWidth; bar.style.transition = ''; bar.classList.add('active');
+  } else {
+    bar.style.transition = 'width 0.2s ease, opacity 0.4s ease 0.2s';
+    bar.style.width = '100%';
+    setTimeout(() => { if (pendingRequests === 0) { bar.classList.remove('active'); bar.style.width = '0'; bar.style.transition = ''; } }, 600);
+  }
+}
+
+async function apiRequest(path, opts) {
+  setLoading(true);
+  try { return await apiRequestRaw(path, opts); }
+  finally { setLoading(false); }
+}
+
+async function apiRequestRaw(path, { method = 'GET', body, auth = true, retry = true } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (auth && accessToken) headers['Authorization'] = 'Bearer ' + accessToken;
+
+  const res = await fetch(API_BASE + path, {
+    method,
+    headers,
+    credentials: 'include', // sends/receives the httpOnly refresh-token cookie
+    body: body ? JSON.stringify(body) : undefined
+  });
+
+  // Access tokens are short-lived (15 min). On a 401, try ONE silent
+  // refresh using the refresh cookie, then retry the original request
+  // once — this is what keeps a user logged in through a long session
+  // without them noticing the token expired.
+  if (res.status === 401 && retry && auth) {
+    const refreshed = await tryRefresh();
+    if (refreshed) return apiRequest(path, { method, body, auth, retry: false });
+  }
+
+  let data = null;
+  try { data = await res.json(); } catch (e) { /* no JSON body */ }
+
+  if (!res.ok) {
+    const message = (data && data.error && data.error.message) || 'Something went wrong. Please try again.';
+    const err = new Error(message);
+    err.status = res.status;
+    err.code = data && data.error && data.error.code;
+    throw err;
+  }
+  return data && data.data;
+}
+
+// Single-flight: concurrent 401s share ONE refresh call, otherwise the
+// rotating refresh token would be replayed and the session killed.
+let refreshInFlight = null;
+function tryRefresh() {
+  if (refreshInFlight) return refreshInFlight;
+  refreshInFlight = (async () => {
+    try {
+      const res = await fetch(API_BASE + '/auth/refresh', { method: 'POST', credentials: 'include' });
+      if (!res.ok) {
+        if (res.status === 401 && currentUser) {
+          // Session is really gone: drop stale UI state.
+          accessToken = null;
+          currentUser = null;
+          try { updateNavForUser(); } catch (e) { /* ignore */ }
+        }
+        return false;
+      }
+      const data = await res.json();
+      accessToken = data.data.accessToken;
+      return true;
+    } catch (e) {
+      return false;
+    } finally {
+      setTimeout(() => { refreshInFlight = null; }, 0);
+    }
+  })();
+  return refreshInFlight;
+}
+
+// On page load: silently try to restore a session from the refresh
+// cookie, so a returning user doesn't have to log in again every visit.
+async function restoreSession() {
+  const ok = await tryRefresh();
+  if (!ok) return;
+  try {
+    const data = await apiRequest('/auth/me');
+    currentUser = data.user;
+    updateNavForUser();
+  } catch (e) {
+    accessToken = null;
+  }
+}
+
+// Real departments (with their real UUIDs) fetched once and cached — the
+// rest of the app works with department NAMES (registration, display),
+// but course-browsing endpoints need the real UUID.
+let realDepartmentsCache = null;
+async function getRealDepartments() {
+  if (realDepartmentsCache) return realDepartmentsCache;
+  const data = await apiRequest('/departments', { auth: false });
+  realDepartmentsCache = data.colleges.flatMap(c => c.departments);
+  return realDepartmentsCache;
+}
+async function getDepartmentId(name) {
+  const depts = await getRealDepartments();
+  const match = depts.find(d => d.name === name);
+  return match ? match.id : null;
+}
+
+// ===== LOCAL STORAGE HELPERS =====
+// safeParse never throws: a single corrupted record (partial write, quota
+// error, manual tampering) used to throw an uncaught JSON.parse error here,
+// which broke getUsers() for EVERY user on that browser — nobody could log
+// in, register, or even load the page correctly until they cleared storage.
+function safeParse(raw, fallback) {
+  if (!raw) return fallback;
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    console.warn('Corrupted data in storage, ignoring and using default.', e);
+    return fallback;
+  }
+}
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  restoreSession().finally(() => { document.body.classList.remove('auth-pending'); lastAccountRefresh = 0; refreshAccountState(); });
+  setTimeout(() => document.body.classList.remove('auth-pending'), 8000);
+  renderDepartments();
+  renderFooterDeptLinks();
+  initAnimations();
+  createParticles();
+  populateSelects();
+
+  // Auto-detect: if the user arrived via a real email link (verification
+  // or password reset), handle it automatically instead of making them
+  // copy/paste anything. Links look like ?mode=verify&token=... or
+  // ?mode=reset&token=...
+  const urlParams = new URLSearchParams(window.location.search);
+  const linkToken = urlParams.get('token');
+  const linkMode = urlParams.get('mode');
+
+  if (linkMode === 'verify' && linkToken) {
+    apiRequest('/auth/verify-email', { method: 'POST', auth: false, body: { token: linkToken } })
+      .then(() => {
+        showToast('Email verified! You can now log in.', 'success');
+        openModal('login-modal');
+        switchAuthTab('login');
+      })
+      .catch((err) => {
+        showToast(err.message || 'This verification link is invalid or has expired.', 'error');
+      })
+      .finally(() => {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      });
+  } else if (linkMode === 'reset' && linkToken) {
+    pendingResetToken = linkToken;
+    openModal('login-modal');
+    document.querySelector('.tabs').classList.add('hidden');
+    document.getElementById('form-login').classList.add('hidden');
+    document.getElementById('form-register').classList.add('hidden');
+    document.getElementById('reset-password-step').classList.remove('hidden');
+    document.getElementById('auth-modal-title').textContent = 'Set New Password';
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  // Counter animation — values computed from real data, not fabricated
+  const totalCourses = departments.reduce((sum, d) => sum + courseCountFor(d.name), 0);
+  const totalDepartments = departments.length;
+  document.getElementById('stat-courses').dataset.target = totalCourses;
+  document.getElementById('stat-departments').dataset.target = totalDepartments;
+
+  const heroObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      animateCounters();
+      heroObserver.disconnect();
+    }
+  });
+  heroObserver.observe(document.getElementById('home'));
+
+  // ESC to close search
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const search = document.getElementById('search-overlay');
+      if (search.classList.contains('active')) toggleSearch();
+      const login = document.getElementById('login-modal');
+      if (login.classList.contains('active')) closeModal('login-modal');
+    }
+  });
+
+  // Close modal on backdrop click
+  document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal(modal.id);
+    });
+  });
+});
+
+// ===== RENDER STREAMS =====
+function renderFooterDeptLinks() {
+  const el = document.getElementById('footer-dept-links');
+  if (!el) return;
+  el.innerHTML = departments.map(d =>
+    `<a href="#" class="footer-link" onclick="openDepartment('${d.name}'); return false;">${d.name}</a>`
+  ).join('');
+}
+
+function courseCountFor(streamName) {
+  const entry = CATALOG[streamName];
+  if (!entry) return 0;
+  return [1, 2].reduce((sum, sem) => sum + (entry[sem] ? entry[sem].length : 0), 0);
+}
+
+function renderDepartments() {
+  const grid = document.getElementById('dept-grid');
+  grid.style.maxWidth = '820px';
+  grid.style.margin = '0 auto';
+  grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(260px, 1fr))';
+  grid.innerHTML = departments.map((dept, i) =>
+    `<div class="animate-on-scroll scale-in dept-card" style="--dept-color: ${dept.color}; transition-delay: ${i * 0.05}s;" onclick="openDepartment('${dept.name}')">
+      <div class="dept-icon" style="background: ${dept.color}20; color: ${dept.color};">
+        <i class="fas ${dept.icon}"></i>
+      </div>
+      <h4 class="dept-name" style="font-size: 1.125rem;">${dept.name}</h4>
+      <p class="dept-count">${courseCountFor(dept.name)} courses · Semester 1 &amp; 2</p>
+    </div>`
+  ).join('');
+}
+
+function openDepartment(streamName) {
+  if (!currentUser) {
+    showToast('Please log in to open ' + streamName, 'info');
+    openModal('login-modal');
+    return;
+  }
+  // Students can only open their own stream (admins can switch inside the dashboard)
+  if (!currentUser.isAdmin && currentUser.dept !== streamName) {
+    showToast('You are registered in the ' + currentUser.dept + ' stream. Contact admin to change stream.', 'warning');
+    return;
+  }
+  showDashboard();
+  showToast('Welcome to the ' + streamName + ' stream', 'success');
+}
+
+// ===== AUTH FUNCTIONS =====
+function switchAuthTab(tab) {
+  document.querySelector('.tabs').classList.remove('hidden');
+  document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
+  document.getElementById('verify-step').classList.add('hidden');
+  document.getElementById('forgot-request-step').classList.add('hidden');
+  document.getElementById('reset-password-step').classList.add('hidden');
+  document.getElementById('auth-modal-title').textContent = tab === 'login' ? 'Welcome Back' : 'Create Account';
+
+  const loginTab = document.getElementById('tab-login');
+  const regTab = document.getElementById('tab-register');
+  if (tab === 'login') {
+    loginTab.classList.add('active');
+    regTab.classList.remove('active');
+  } else {
+    regTab.classList.add('active');
+    loginTab.classList.remove('active');
+  }
+  // Clear errors
+  document.querySelectorAll('.form-error').forEach(e => e.classList.remove('show'));
+}
+
+// ===== DEVICE FINGERPRINT (with cookie fallback) =====
+// Student accounts are locked to the device they first log in on (to stop
+// one paid account being shared). localStorage alone is fragile — private/
+// incognito windows wipe it, and some browsers clear it more aggressively
+// than cookies. Storing the same ID in both places means a legitimate user
+// only gets falsely locked out if BOTH are cleared at the same time.
+function readCookie(name) {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+function writeCookie(name, value, days) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires + ';path=/;SameSite=Lax';
+}
+function getDeviceId() {
+  let deviceId = null;
+  try { deviceId = localStorage.getItem('ethio_device_id'); } catch (e) { /* storage unavailable */ }
+  if (!deviceId) deviceId = readCookie('ethio_device_id');
+
+  if (!deviceId) {
+    deviceId = 'dev_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+  }
+
+  // Re-sync both stores every call so either one alone is enough to recover the ID
+  try { localStorage.setItem('ethio_device_id', deviceId); } catch (e) { /* storage unavailable */ }
+  writeCookie('ethio_device_id', deviceId, 365);
+
+  return deviceId;
+}
+
+// NOTE: there is no fake hardcoded admin account anymore. An admin account
+// is just a regular registered account whose role was set to 'admin' in
+// the real database — see the deployment notes for how to create one.
+
+async function handleLogin() {
+  const emailInput = document.getElementById('login-email').value || '';
+  const email = emailInput.trim().toLowerCase();
+  pendingRegistration = { email };
+  const password = document.getElementById('login-password').value;
+  const errorEl = document.getElementById('login-email-error');
+  errorEl.classList.remove('show');
+
+  if (!email || !password) {
+    errorEl.textContent = 'Please enter both email and password.';
+    errorEl.classList.add('show');
+    return;
+  }
+
+  try {
+    const data = await apiRequest('/auth/login', { method: 'POST', auth: false, body: { email, password } });
+    accessToken = data.accessToken;
+    currentUser = data.user;
+    updateNavForUser();
+    closeModal('login-modal');
+    showToast('Welcome back, ' + currentUser.name + '!', 'success');
+    setTimeout(() => showDashboard(), 800);
+  } catch (err) {
+    // The real backend deliberately gives one generic message for both a
+    // wrong password and an unknown email (prevents account enumeration),
+    // but still tells you specifically if verification is the blocker.
+    if (err.code === 'EMAIL_NOT_VERIFIED') {
+      errorEl.innerHTML = 'Please verify your email before logging in (check your Spam folder too). <a href="#" onclick="resendCode();return false;" style="color:inherit;text-decoration:underline;">Resend verification email</a>';
+    } else {
+      errorEl.textContent = err.message || 'Invalid email or password.';
+    }
+    errorEl.classList.add('show');
+  }
+}
+
+function showForgotPasswordForm() {
+  document.querySelector('.tabs').classList.add('hidden');
+  document.getElementById('form-login').classList.add('hidden');
+  document.getElementById('form-register').classList.add('hidden');
+  document.getElementById('forgot-request-step').classList.remove('hidden');
+  document.getElementById('auth-modal-title').textContent = 'Reset Password';
+}
+
+async function handleRequestPasswordReset() {
+  const email = document.getElementById('forgot-email').value.trim().toLowerCase();
+  if (!email) { showToast('Please enter your email.', 'warning'); return; }
+  try {
+    await apiRequest('/auth/request-password-reset', { method: 'POST', auth: false, body: { email } });
+    showToast('If an account exists for that email, a reset link has been sent.', 'success');
+  } catch (err) {
+    showToast(err.message || 'Could not send the reset email. Please try again.', 'error');
+  }
+}
+
+// Holds the token from a real password-reset email link, set by the
+// auto-detect logic on page load (see DOMContentLoaded).
+let pendingResetToken = null;
+
+async function handleResetPassword() {
+  const password = document.getElementById('reset-password-input').value;
+  const confirm = document.getElementById('reset-confirm-input').value;
+  const errorEl = document.getElementById('reset-password-error');
+  errorEl.classList.remove('show');
+
+  if (password.length < 6) {
+    errorEl.textContent = 'Password must be at least 6 characters.';
+    errorEl.classList.add('show');
+    return;
+  }
+  if (password !== confirm) {
+    errorEl.textContent = 'Passwords do not match.';
+    errorEl.classList.add('show');
+    return;
+  }
+  if (!pendingResetToken) {
+    showToast('This reset link is missing its token. Please use the link from your email again.', 'error');
+    return;
+  }
+
+  try {
+    await apiRequest('/auth/reset-password', {
+      method: 'POST',
+      auth: false,
+      body: { token: pendingResetToken, password, confirmPassword: confirm }
+    });
+    showToast('Password reset successfully! Please log in with your new password.', 'success');
+    switchAuthTab('login');
+  } catch (err) {
+    showToast(err.message || 'This reset link is invalid or has expired. Please request a new one.', 'error');
+  }
+}
+
+async function handleRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const dept = document.getElementById('reg-dept').value;
+  const year = document.getElementById('reg-year').value;
+  const password = document.getElementById('reg-password').value;
+  const confirm = document.getElementById('reg-confirm').value;
+
+  // Validation
+  let valid = true;
+  if (!name) { document.getElementById('reg-name-error').classList.add('show'); valid = false; }
+  else document.getElementById('reg-name-error').classList.remove('show');
+
+  if (!email || !email.includes('@')) { document.getElementById('reg-email-error').classList.add('show'); valid = false; }
+  else document.getElementById('reg-email-error').classList.remove('show');
+
+  if (password.length < 6) { document.getElementById('reg-password-error').classList.add('show'); valid = false; }
+  else document.getElementById('reg-password-error').classList.remove('show');
+
+  if (password !== confirm) { document.getElementById('reg-confirm-error').classList.add('show'); valid = false; }
+  else document.getElementById('reg-confirm-error').classList.remove('show');
+
+  if (!valid) return;
+
+  try {
+    await apiRequest('/auth/register', {
+      method: 'POST',
+      auth: false,
+      body: { name, email, dept, year: parseInt(year), password, confirmPassword: confirm }
+    });
+
+    pendingRegistration = { email };
+    document.getElementById('form-login').classList.add('hidden');
+    document.getElementById('form-register').classList.add('hidden');
+    document.querySelector('.tabs').classList.add('hidden');
+    document.getElementById('verify-step').classList.remove('hidden');
+    document.getElementById('verify-email-display').textContent = email;
+    document.getElementById('auth-modal-title').textContent = 'Verify Email';
+  } catch (err) {
+    document.getElementById('reg-email-error').textContent = err.message || 'Could not create your account. Please try again.';
+    document.getElementById('reg-email-error').classList.add('show');
+  }
+}
+
+async function resendCode() {
+  if (!pendingRegistration || !pendingRegistration.email) return;
+  try {
+    await apiRequest('/auth/resend-verification', {
+      method: 'POST',
+      auth: false,
+      body: { email: pendingRegistration.email }
+    });
+    showToast('Verification email resent — check your inbox.', 'info');
+  } catch (err) {
+    showToast(err.message || 'Could not resend the email. Please try again shortly.', 'error');
+  }
+}
+
+async function handleLogout() {
+  try { await apiRequest('/auth/logout', { method: 'POST' }); } catch (e) { /* proceed with local logout regardless */ }
+  currentUser = null;
+  accessToken = null;
+  currentViewDept = null;
+  currentYear = 1;
+  updateNavForUser();
+  showHome();
+  showToast('Logged out successfully.', 'info');
+}
+
+function updateNavForUser() {
+  const loginBtn = document.getElementById('nav-login-btn');
+  const regBtn = document.getElementById('nav-register-btn');
+  const dashBtn = document.getElementById('nav-dashboard-btn');
+  const logoutBtn = document.getElementById('nav-logout-btn');
+
+  if (currentUser) {
+    loginBtn.classList.add('hidden');
+    regBtn.classList.add('hidden');
+    dashBtn.classList.remove('hidden');
+    logoutBtn.classList.remove('hidden');
+    dashBtn.textContent = '';
+    const dashIcon = document.createElement('i');
+    dashIcon.className = 'fas fa-user-circle mr-2';
+    dashBtn.append(dashIcon, ' ' + String(currentUser.name || '').split(' ')[0]);
+  } else {
+    loginBtn.classList.remove('hidden');
+    regBtn.classList.remove('hidden');
+    dashBtn.classList.add('hidden');
+    logoutBtn.classList.add('hidden');
+  }
+}
+
+// ===== LIVE ACCOUNT STATE =====
+// Picks up premium approval and shows payment decisions without a reload.
+let lastAccountRefresh = Date.now();
+async function refreshAccountState() {
+  if (!currentUser || !accessToken) return;
+  // The page just loaded (or just refreshed): don't repeat the same requests.
+  if (Date.now() - lastAccountRefresh < 15000) return;
+  lastAccountRefresh = Date.now();
+  try {
+    // Run both requests at the same time instead of one after the other.
+    const [me, n] = await Promise.all([
+      apiRequest('/auth/me'),
+      apiRequest('/notifications?pageSize=10')
+    ]);
+    const wasPaid = currentUser.isPaid;
+    currentUser = me.user;
+    if (wasPaid !== currentUser.isPaid) { updatePremiumBadge(); renderDashboardCourses(); }
+    for (const item of (n.notifications || []).filter(x => !x.isRead)) {
+      showToast(item.title + ': ' + item.message, item.type === 'payment_rejected' ? 'error' : 'success');
+      apiRequest('/notifications/' + item.id + '/read', { method: 'PATCH' }).catch(() => {});
+    }
+  } catch (e) { /* non-critical */ }
+}
+window.addEventListener('focus', refreshAccountState);
+
+// ===== DASHBOARD =====
+function showDashboard() {
+  if (!currentUser) { openModal('login-modal'); return; }
+  document.getElementById('main-content').classList.add('hidden');
+  document.getElementById('dashboard-view').classList.remove('hidden');
+  document.getElementById('dashboard-view').style.display = 'flex';
+
+  // Update dashboard info
+  document.getElementById('dash-name').textContent = currentUser.name;
+  document.getElementById('dash-email').textContent = currentUser.email;
+  document.getElementById('dash-avatar').textContent = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  document.getElementById('dash-year-text').textContent = currentUser.year ? 'Semester ' + currentUser.year : 'All semesters';
+  document.getElementById('dash-dept-text').textContent = currentUser.dept || 'All streams';
+
+  // Show admin button if admin
+  const adminBtn = document.getElementById('admin-add-btn');
+  const adminNav = document.getElementById('admin-nav-item');
+  const deptSwitcher = document.getElementById('admin-dept-switcher');
+  if (currentUser.isAdmin) {
+    adminBtn.classList.remove('hidden');
+    if (adminNav) adminNav.classList.remove('hidden');
+    deptSwitcher.classList.remove('hidden');
+    populateAdminDeptSwitcher();
+  } else {
+    adminBtn.classList.add('hidden');
+    if (adminNav) adminNav.classList.add('hidden');
+    deptSwitcher.classList.add('hidden');
+  }
+
+  // Update premium badge
+  updatePremiumBadge();
+  refreshAccountState();
+
+  // Load admin users list if admin
+  if (currentUser.isAdmin) {
+    renderAdminUsersList();
+    renderAdminPaymentsList();
+  }
+
+  // Start on the user's own semester (admins without one start on Semester 1)
+  currentYear = currentUser.year || 1;
+  if (currentUser.isAdmin && !currentViewDept) currentViewDept = currentUser.dept || departments[0].name;
+  updateYearTabs();
+  renderDashboardCourses();
+
+  // Update settings form
+  document.getElementById('settings-name').value = currentUser.name;
+  document.getElementById('settings-email').value = currentUser.email;
+  if (currentUser.year) document.getElementById('settings-year').value = currentUser.year;
+  if (currentUser.dept) document.getElementById('settings-dept').value = currentUser.dept;
+}
+
+function showHome() {
+  document.getElementById('dashboard-view').classList.add('hidden');
+  document.getElementById('dashboard-view').style.display = 'none';
+  document.getElementById('main-content').classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function switchDashTab(tab) {
+  document.querySelectorAll('.dash-content').forEach(c => c.classList.add('hidden'));
+  document.getElementById('dash-' + tab).classList.remove('hidden');
+  document.querySelectorAll('.dash-nav-item').forEach(t => {
+    const isActive = t.dataset.tab === tab || t.getAttribute('onclick').includes(tab);
+    t.classList.toggle('active', isActive);
+  });
+  currentDashTab = tab;
+  if (tab === 'progress') renderProgressTab();
+}
+
+// ===== YEAR TABS & COURSES =====
+function switchYearTab(year) {
+  currentYear = year;
+  updateYearTabs();
+  renderDashboardCourses();
+}
+
+async function populateAdminDeptSwitcher() {
+  const select = document.getElementById('admin-dept-select');
+  try {
+    const depts = await getRealDepartments();
+    select.innerHTML = depts.map(d => `<option value="${escapeHtml(d.name)}">${escapeHtml(d.name)}</option>`).join('');
+    select.value = currentViewDept || currentUser.dept;
+  } catch (err) {
+    select.innerHTML = `<option value="${escapeHtml(currentUser.dept)}">${escapeHtml(currentUser.dept)}</option>`;
+  }
+}
+
+function switchViewDept(deptName) {
+  currentViewDept = deptName;
+  renderDashboardCourses();
+}
+
+function updateYearTabs() {
+  document.querySelectorAll('.year-tab').forEach(tab => {
+    tab.classList.toggle('active', parseInt(tab.dataset.year) === currentYear);
+  });
+}
+
+// ===== PROGRESS TRACKING =====
+async function renderProgressTab() {
+  const statsEl = document.getElementById('progress-stats');
+  const listEl = document.getElementById('progress-course-list');
+  statsEl.innerHTML = '';
+  listEl.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+
+  try {
+    const data = await apiRequest('/progress');
+    const rows = data.progress || data;
+
+    const total = rows.length;
+    const completed = rows.filter(r => r.status === 'completed').length;
+    const inProgress = rows.filter(r => r.status === 'in_progress').length;
+    const allCourses = Math.max(total, currentUser && currentUser.dept ? courseCountFor(currentUser.dept) : 0);
+    const overallPct = allCourses === 0 ? 0 : Math.round(rows.reduce((sum, r) => sum + r.progressPercent, 0) / allCourses);
+
+    statsEl.innerHTML = `
+      <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 3rem; font-weight: 900; color: var(--ethGreen); margin-bottom: 0.5rem;">${overallPct}%</div>
+        <div style="font-weight: 600; margin-bottom: 0.25rem;">Overall Completion</div>
+        <div style="font-size: 0.75rem; color: var(--muted);">${total === 0 ? 'Start learning to see progress' : 'Across all ' + allCourses + ' courses'}</div>
+      </div>
+      <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 3rem; font-weight: 900; color: var(--ethYellow); margin-bottom: 0.5rem;">${completed}</div>
+        <div style="font-weight: 600; margin-bottom: 0.25rem;">Courses Completed</div>
+        <div style="font-size: 0.75rem; color: var(--muted);">Out of ${total} started</div>
+      </div>
+      <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 3rem; font-weight: 900; color: #3B82F6; margin-bottom: 0.5rem;">${inProgress}</div>
+        <div style="font-weight: 600; margin-bottom: 0.25rem;">In Progress</div>
+        <div style="font-size: 0.75rem; color: var(--muted);">Currently studying</div>
+      </div>
+    `;
+
+    if (total === 0) {
+      listEl.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem; text-align: center; padding: 2rem;">No progress yet — open a course and mark it as started to see it here.</p>';
+    } else {
+      listEl.innerHTML = rows.map(r => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-radius: 12px; background: var(--bg); border: 1px solid var(--border);">
+          <div>
+            <div style="font-weight: 600; font-size: 0.875rem;">${escapeHtml(r.courseTitle)}</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">${r.status.replace('_', ' ')} · ${r.progressPercent}%</div>
+          </div>
+          <div style="width: 100px; height: 6px; border-radius: 999px; background: var(--border); overflow: hidden;">
+            <div style="height: 100%; width: ${r.progressPercent}%; background: var(--ethGreen);"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (err) {
+    listEl.innerHTML = `<p style="color: var(--ethRed); font-size: 0.875rem;">${escapeHtml(err.message || 'Could not load your progress.')}</p>`;
+  }
+}
+
+// Called from a course's detail view (added alongside its files) to let a
+// student mark it in-progress or completed.
+async function markProgress(courseId, status) {
+  try {
+    await apiRequest(`/progress/${courseId}`, { method: 'PATCH', body: { status } });
+    showToast(status === 'completed' ? 'Marked as completed! 🎉' : 'Marked as in progress.', 'success');
+  } catch (err) {
+    showToast(err.message || 'Could not update your progress.', 'error');
+  }
+}
+
+async function renderDashboardCourses() {
+  const grid = document.getElementById('dash-course-grid');
+  const empty = document.getElementById('course-empty');
+  const isPaid = currentUser && currentUser.isPaid;
+  const canAccess = currentUser && (currentUser.isAdmin || currentUser.isPaid);
+
+  const viewDept = currentViewDept || currentUser.dept;
+  const deptId = await getDepartmentId(viewDept);
+  if (!deptId) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  let deptCourses = [];
+  try {
+    const data = await apiRequest(`/departments/${deptId}/courses?year=${currentYear}`);
+    deptCourses = data.courses;
+  } catch (err) {
+    showToast(err.message || 'Could not load courses.', 'error');
+  }
+
+  if (!deptCourses || deptCourses.length === 0) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  grid.innerHTML = deptCourses.map(course => {
+    return `<div class="course-card" id="course-${course.id}">
+      ${currentUser.isAdmin ? `<div class="course-admin-actions">
+        <button class="admin-btn edit" onclick="openQuizBuilder('${course.id}')" title="Add Quiz"><i class="fas fa-graduation-cap"></i></button>
+        <button class="admin-btn edit" onclick="editCourse('${course.id}')" title="Edit"><i class="fas fa-pen"></i></button>
+        <button class="admin-btn" onclick="deleteCourse('${course.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+      </div>` : ''}
+
+      ${!canAccess ? `
+      <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10,18,37,0.7); backdrop-filter: blur(4px); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5; cursor: pointer;" onclick="openPremiumModal()">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--ethGreen), var(--ethAccent)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; margin-bottom: 1rem; box-shadow: 0 8px 30px rgba(7,137,48,0.4);">
+          <i class="fas fa-lock"></i>
+        </div>
+        <p style="font-weight: 700; font-size: 1rem; color: var(--fg); margin-bottom: 0.25rem;">Premium Content</p>
+        <p style="font-size: 0.75rem; color: var(--muted);">Pay ${PREMIUM_PRICE_ETB} ETB to unlock</p>
+      </div>
+      ` : ''}
+
+      <div class="course-type-icon"><i class="fas fa-book"></i></div>
+      <h4 class="course-title">${escapeHtml(course.title)}</h4>
+      <p class="course-meta">${escapeHtml(course.description || '')}</p>
+
+      <div class="course-files hidden" id="files-${course.id}" style="margin-bottom: 1rem;"></div>
+
+      <div class="course-actions" id="actions-${course.id}">
+        ${canAccess
+          ? `<button class="course-btn course-btn-primary" onclick="openCourseDetail('${course.id}')"><i class="fas fa-folder-open"></i> View Course</button>`
+          : `<button class="course-btn course-btn-primary" style="background: linear-gradient(135deg, var(--ethGreen), var(--ethAccent));" onclick="openPremiumModal()"><i class="fas fa-lock"></i> Unlock</button>
+             <span style="font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 0.25rem;"><i class="fas fa-crown" style="color: var(--ethYellow);"></i> Premium</span>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Fetches a course's three study materials (cheat sheet, summary, detailed
+// explanation) on demand and renders them inline in its card. Files are a
+// separate resource from the course itself in the backend, so they are not
+// known until the student asks.
+function safeHttpUrl(url) {
+  return typeof url === 'string' && /^https?:\/\//i.test(url) ? url : null;
+}
+
+function renderMaterialSlots(courseId, files) {
+  const byKind = {};
+  files.forEach(f => { byKind[f.kind] = f; });
+
+  return MATERIAL_SLOTS.map(slot => {
+    const file = byKind[slot.kind];
+    const key = courseId + '-' + slot.kind;
+
+    let body;
+    if (!file) {
+      body = '<span class="course-coming"><i class="fas fa-clock"></i> Coming soon</span>';
+    } else if (file.fileType === 'pdf') {
+      body = `<button class="course-btn course-btn-primary" onclick="downloadCourseFile('${courseId}', '${file.id}', '${escapeHtml(slot.label)}')"><i class="fas fa-eye"></i> View PDF</button>`;
+    } else {
+      const href = safeHttpUrl(file.externalUrl);
+      body = href
+        ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" class="course-btn course-btn-primary"><i class="fas fa-external-link-alt"></i> ${escapeHtml(file.originalFilename || 'Open link')}</a>`
+        : '<span class="course-coming">Link unavailable</span>';
+    }
+
+    const adminControls = currentUser && currentUser.isAdmin ? `
+      <div style="margin-top: 0.5rem; padding: 0.625rem; border-radius: 10px; background: var(--bg); border: 1px dashed var(--border);">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+          <select id="mat-type-${key}" class="form-select" style="width: auto; padding: 0.375rem 0.5rem; font-size: 0.75rem;" onchange="onMaterialTypeChange('${key}')">
+            <option value="pdf">PDF</option>
+            <option value="link">Link</option>
+          </select>
+          <input type="file" id="mat-file-${key}" accept="application/pdf" style="flex: 1; min-width: 140px; font-size: 0.75rem;">
+          <input type="url" id="mat-url-${key}" class="form-input hidden" placeholder="https://..." style="flex: 1; min-width: 140px; padding: 0.375rem 0.5rem; font-size: 0.75rem;">
+          <button class="course-btn course-btn-ghost" id="mat-save-${key}" onclick="saveMaterial('${courseId}', '${slot.kind}')"><i class="fas fa-upload"></i> ${file ? 'Replace' : 'Upload'}</button>
+          ${file ? `<button class="course-btn" style="background: rgba(218,18,26,0.1); color: var(--ethRed);" onclick="removeMaterial('${courseId}', '${file.id}')" title="Remove"><i class="fas fa-trash"></i></button>` : ''}
+        </div>
+      </div>` : '';
+
+    return `<div style="margin-bottom: 0.875rem; padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border);">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+        <i class="fas ${slot.icon}" style="color: var(--ethGreen);"></i>
+        <div>
+          <div style="font-weight: 700; font-size: 0.875rem;">${slot.label}</div>
+          <div style="font-size: 0.75rem; color: var(--muted);">${slot.hint}</div>
+        </div>
+      </div>
+      ${body}
+      ${adminControls}
+    </div>`;
+  }).join('');
+}
+
+function onMaterialTypeChange(key) {
+  const type = document.getElementById('mat-type-' + key).value;
+  document.getElementById('mat-file-' + key).classList.toggle('hidden', type !== 'pdf');
+  document.getElementById('mat-url-' + key).classList.toggle('hidden', type !== 'link');
+}
+
+async function saveMaterial(courseId, kind) {
+  const key = courseId + '-' + kind;
+  const type = document.getElementById('mat-type-' + key).value;
+  const btn = document.getElementById('mat-save-' + key);
+  const originalLabel = btn.innerHTML;
+
+  try {
+    if (type === 'pdf') {
+      const pdfFile = document.getElementById('mat-file-' + key).files[0];
+      if (!pdfFile) { showToast('Please choose a PDF file first.', 'warning'); return; }
+      if (pdfFile.type !== 'application/pdf') { showToast('Only PDF files can be uploaded here.', 'warning'); return; }
+      if (pdfFile.size > 25 * 1024 * 1024) { showToast('That PDF is bigger than 25MB.', 'warning'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+
+      // 3 steps: get a signed upload URL, upload the file to storage, then
+      // confirm so the backend saves it in this material slot.
+      const uploadInfo = await apiRequest(`/courses/${courseId}/files/upload-url`, {
+        method: 'POST',
+        body: { originalFilename: pdfFile.name, mimeType: pdfFile.type, sizeBytes: pdfFile.size }
+      });
+      const uploadRes = await fetch(uploadInfo.uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': pdfFile.type },
+        body: pdfFile
+      });
+      if (!uploadRes.ok) throw new Error('The PDF upload failed. Please try again.');
+
+      await apiRequest(`/courses/${courseId}/files/pdf`, {
+        method: 'POST',
+        body: {
+          kind,
+          storageKey: uploadInfo.storageKey,
+          originalFilename: pdfFile.name,
+          mimeType: pdfFile.type,
+          sizeBytes: pdfFile.size
+        }
+      });
+    } else {
+      const url = document.getElementById('mat-url-' + key).value.trim();
+      if (!safeHttpUrl(url)) { showToast('Enter a link that starts with http:// or https://', 'warning'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+      await apiRequest(`/courses/${courseId}/files`, {
+        method: 'POST',
+        body: { kind, fileType: 'link', externalUrl: url }
+      });
+    }
+
+    showToast('Material saved.', 'success');
+    await openCourseDetail(courseId);
+  } catch (err) {
+    showToast(err.message || 'Could not save this material.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = originalLabel;
+  }
+}
+
+async function removeMaterial(courseId, fileId) {
+  if (!confirm('Remove this material? Students will no longer see it.')) return;
+  try {
+    await apiRequest(`/courses/${courseId}/files/${fileId}`, { method: 'DELETE' });
+    showToast('Material removed.', 'info');
+    await openCourseDetail(courseId);
+  } catch (err) {
+    showToast(err.message || 'Could not remove this material.', 'error');
+  }
+}
+
+async function openCourseDetail(courseId) {
+  const filesEl = document.getElementById('files-' + courseId);
+  const actionsEl = document.getElementById('actions-' + courseId);
+  actionsEl.innerHTML = '<span class="course-coming"><i class="fas fa-spinner fa-spin"></i> Loading...</span>';
+
+  try {
+    // Course details and quiz list are independent, so ask for both at once.
+    const [data, quizData] = await Promise.all([
+      apiRequest('/courses/' + courseId),
+      apiRequest(`/courses/${courseId}/quizzes`).catch(() => null)
+    ]);
+    const files = data.course.files || [];
+    filesEl.classList.remove('hidden');
+    filesEl.innerHTML = renderMaterialSlots(courseId, files);
+
+    {
+      if (quizData && quizData.quizzes && quizData.quizzes.length > 0) {
+        filesEl.innerHTML += quizData.quizzes.map(q => `
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <button class="course-btn course-btn-primary" style="flex: 1; background: #3B82F6;" onclick="openQuizTaking('${q.id}')"><i class="fas fa-clipboard-question"></i> Take Quiz: ${escapeHtml(q.title)}</button>
+            ${currentUser.isAdmin ? `<button class="course-btn" style="background: rgba(218,18,26,0.1); color: var(--ethRed);" onclick="deleteQuiz('${q.id}', '${courseId}')" title="Delete Quiz"><i class="fas fa-trash"></i></button>` : ''}
+          </div>
+        `).join('');
+      }
+    }
+
+    actionsEl.innerHTML = `
+      <button class="course-btn course-btn-ghost" onclick="markProgress('${courseId}', 'in_progress')"><i class="fas fa-play-circle"></i> Mark In Progress</button>
+      <button class="course-btn course-btn-primary" onclick="markProgress('${courseId}', 'completed')"><i class="fas fa-check-circle"></i> Mark Completed</button>
+    `;
+  } catch (err) {
+    actionsEl.innerHTML = `<span style="color: var(--ethRed); font-size: 0.875rem;">${escapeHtml(err.message || 'Could not load this course.')}</span>`;
+  }
+}
+
+async function downloadCourseFile(courseId, fileId, title) {
+  const body = document.getElementById('pdf-viewer-body');
+  document.getElementById('pdf-modal-title').textContent = title || 'Document';
+  body.innerHTML = '<p style="text-align:center;padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+  openModal('pdf-modal');
+  try {
+    if (!window.pdfjsLib) throw new Error('The PDF viewer could not load. Check your connection and try again.');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const data = await apiRequest(`/courses/${courseId}/files/${fileId}/download-url`);
+    const url = safeHttpUrl(data.downloadUrl);
+    if (!url) throw new Error('This file has an invalid link.');
+    const pdf = await pdfjsLib.getDocument({ url }).promise;
+    body.innerHTML = '';
+    const mark = currentUser ? currentUser.email : '';
+    const width = Math.min(body.clientWidth - 16, 860);
+    for (let n = 1; n <= pdf.numPages; n++) {
+      const page = await pdf.getPage(n);
+      const base = page.getViewport({ scale: 1 });
+      const scale = (width / base.width) * (window.devicePixelRatio || 1);
+      const vp = page.getViewport({ scale });
+      const wrap = document.createElement('div');
+      wrap.style.cssText = `position:relative;margin:0 auto 0.75rem;width:${width}px;`;
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width; canvas.height = vp.height;
+      canvas.style.cssText = 'width:100%;height:auto;display:block;border-radius:6px;';
+      wrap.appendChild(canvas);
+      // Watermark with the viewer's email on every page (discourages sharing).
+      const wm = document.createElement('div');
+      wm.textContent = mark;
+      wm.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:1.6rem;font-weight:700;color:rgba(120,120,120,0.22);transform:rotate(-30deg);white-space:nowrap;overflow:hidden;';
+      wrap.appendChild(wm);
+      body.appendChild(wrap);
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+    }
+  } catch (err) {
+    body.innerHTML = '';
+    const p = document.createElement('p');
+    p.style.cssText = 'color:var(--ethRed);text-align:center;padding:2rem;';
+    p.textContent = err.message || 'Could not open this file.';
+    body.appendChild(p);
+  }
+}
+
+function closePdfViewer() {
+  document.getElementById('pdf-viewer-body').innerHTML = '';
+  closeModal('pdf-modal');
+}
+
+// ===== QUIZ: TAKING (student) =====
+let currentQuizId = null;
+
+let currentQuizData = null;
+async function openQuizTaking(quizId) {
+  currentQuizId = quizId;
+  const body = document.getElementById('quiz-modal-body');
+  body.innerHTML = '<p style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading quiz...</p>';
+  openModal('quiz-modal');
+
+  try {
+    const data = await apiRequest('/quizzes/' + quizId);
+    const quiz = data.quiz;
+    currentQuizData = quiz;
+    document.getElementById('quiz-modal-title').innerHTML = `<i class="fas fa-clipboard-question" style="margin-right: 0.5rem;"></i>${escapeHtml(quiz.title)}`;
+
+    body.innerHTML = quiz.questions.map((q, i) => `
+      <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
+        <p style="font-weight: 600; margin-bottom: 0.75rem;">${i + 1}. ${escapeHtml(q.questionText)}</p>
+        ${q.choices.map(c => `
+          <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border-radius: 8px; cursor: pointer; margin-bottom: 0.25rem;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+            <input type="radio" name="q-${q.id}" value="${c.id}">
+            <span>${escapeHtml(c.choiceText)}</span>
+          </label>
+        `).join('')}
+      </div>
+    `).join('') + `<button class="btn-primary w-full" style="padding: 0.875rem;" onclick="submitQuizAnswers()"><i class="fas fa-paper-plane mr-2"></i> Submit Answers</button>`;
+  } catch (err) {
+    body.innerHTML = `<p style="color: var(--ethRed); text-align: center; padding: 2rem;">${escapeHtml(err.message || 'Could not load this quiz.')}</p>`;
+  }
+}
+
+function renderQuizReview(breakdown) {
+  if (!breakdown || !currentQuizData) return '';
+  const byId = {};
+  currentQuizData.questions.forEach(q => { byId[q.id] = q; });
+  return '<h4 style="font-weight:700;margin:0.5rem 0 1rem;">Review your answers</h4>' + breakdown.map((b, i) => {
+    const q = byId[b.questionId];
+    if (!q) return '';
+    const choices = q.choices.map(c => {
+      const isCorrect = c.id === b.correctChoiceId;
+      const isPicked = c.id === b.submittedChoiceId;
+      let style = 'padding:0.5rem 0.75rem;border-radius:8px;margin-bottom:0.25rem;border:1px solid var(--border);';
+      let mark = '';
+      if (isCorrect) { style += 'background:rgba(34,197,94,0.15);border-color:var(--ethGreen);'; mark = ' <i class="fas fa-check" style="color:var(--ethGreen);"></i> Correct answer'; }
+      else if (isPicked) { style += 'background:rgba(218,18,26,0.12);border-color:var(--ethRed);'; mark = ' <i class="fas fa-times" style="color:var(--ethRed);"></i> Your answer'; }
+      return `<div style="${style}">${escapeHtml(c.choiceText)}${mark}</div>`;
+    }).join('');
+    const note = b.submittedChoiceId ? '' : '<p style="color:var(--ethRed);font-size:0.8rem;margin:0 0 0.25rem;">You did not answer this question.</p>';
+    return `<div style="margin-bottom:1.25rem;"><p style="font-weight:600;margin-bottom:0.5rem;">${i + 1}. ${escapeHtml(q.questionText)}</p>${note}${choices}</div>`;
+  }).join('');
+}
+
+async function submitQuizAnswers() {
+  const body = document.getElementById('quiz-modal-body');
+  const radios = body.querySelectorAll('input[type="radio"]:checked');
+  const answers = {};
+  radios.forEach(r => { answers[r.name.replace('q-', '')] = r.value; });
+
+  try {
+    const result = await apiRequest(`/quizzes/${currentQuizId}/submit`, { method: 'POST', body: { answers } });
+    const color = result.passed ? 'var(--ethGreen)' : 'var(--ethRed)';
+    const icon = result.passed ? 'fa-check-circle' : 'fa-times-circle';
+
+    body.innerHTML = `
+      <div style="text-align: center; padding: 1rem 0 1.5rem;">
+        <i class="fas ${icon}" style="font-size: 3rem; color: ${color}; margin-bottom: 1rem;"></i>
+        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">${result.percentScore}%</h3>
+        <p style="color: var(--muted);">${result.score}/${result.totalPoints} points · ${result.passed ? 'Passed!' : 'Not passed (need ' + result.passingScorePercent + '%)'}</p>
+      </div>
+      ${renderQuizReview(result.breakdown)}
+      <button class="btn-ghost w-full" style="padding: 0.875rem; margin-top: 1rem;" onclick="closeModal('quiz-modal')">Close</button>
+    `;
+
+    if (result.passed) {
+      renderDashboardCourses();
+    }
+  } catch (err) {
+    showToast(err.message || 'Could not submit your answers. Please try again.', 'error');
+  }
+}
+
+// ===== QUIZ: BUILDING (admin) =====
+let qbQuestionCount = 0;
+
+function openQuizBuilder(courseId) {
+  document.getElementById('qb-course-id').value = courseId;
+  document.getElementById('qb-title').value = '';
+  document.getElementById('qb-passing').value = 60;
+  document.getElementById('qb-questions').innerHTML = '';
+  qbQuestionCount = 0;
+  addBuilderQuestion();
+  openModal('quiz-builder-modal');
+}
+
+function addBuilderQuestion() {
+  const qIndex = qbQuestionCount++;
+  const container = document.getElementById('qb-questions');
+  const block = document.createElement('div');
+  block.id = 'qb-q-' + qIndex;
+  block.style = 'padding: 1rem; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); margin-bottom: 1rem;';
+  block.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <label class="form-label" style="margin: 0;">Question ${qIndex + 1}</label>
+      <button type="button" onclick="document.getElementById('qb-q-${qIndex}').remove()" style="background: none; border: none; color: var(--ethRed); cursor: pointer;"><i class="fas fa-trash"></i></button>
+    </div>
+    <input type="text" class="form-input qb-question-text" placeholder="Question text" style="margin-bottom: 0.5rem;">
+    <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;">Select the radio button next to the correct choice:</p>
+    ${[0, 1, 2, 3].map(i => `
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.375rem;">
+        <input type="radio" name="qb-correct-${qIndex}" value="${i}" ${i === 0 ? 'checked' : ''}>
+        <input type="text" class="form-input qb-choice-text" placeholder="Choice ${i + 1}" style="flex: 1;">
+      </div>
+    `).join('')}
+  `;
+  container.appendChild(block);
+}
+
+async function submitQuizBuilder() {
+  const courseId = document.getElementById('qb-course-id').value;
+  const title = document.getElementById('qb-title').value.trim();
+  const passingScorePercent = parseInt(document.getElementById('qb-passing').value) || 60;
+
+  if (!title) { showToast('Please enter a quiz title.', 'warning'); return; }
+
+  const questionBlocks = document.querySelectorAll('#qb-questions > div');
+  const questions = [];
+  for (const block of questionBlocks) {
+    const questionText = block.querySelector('.qb-question-text').value.trim();
+    if (!questionText) continue;
+    const choiceInputs = block.querySelectorAll('.qb-choice-text');
+    const correctIndex = parseInt(block.querySelector('input[type="radio"]:checked').value);
+    const choices = Array.from(choiceInputs)
+      .map((input, i) => ({ choiceText: input.value.trim(), isCorrect: i === correctIndex }))
+      .filter(c => c.choiceText);
+    if (choices.length < 2) continue;
+    questions.push({ questionText, points: 1, choices });
+  }
+
+  if (questions.length === 0) { showToast('Please add at least one complete question with choices.', 'warning'); return; }
+
+  try {
+    await apiRequest(`/courses/${courseId}/quizzes`, {
+      method: 'POST',
+      body: { title, passingScorePercent, questions }
+    });
+    showToast('Quiz created successfully!', 'success');
+    closeModal('quiz-builder-modal');
+  } catch (err) {
+    showToast(err.message || 'Could not create the quiz. Please try again.', 'error');
+  }
+}
+
+async function deleteQuiz(quizId, courseId) {
+  if (!confirm('Delete this quiz? Past student attempts will also be removed.')) return;
+  try {
+    await apiRequest('/quizzes/' + quizId, { method: 'DELETE' });
+    showToast('Quiz deleted.', 'info');
+    openCourseDetail(courseId);
+  } catch (err) {
+    showToast(err.message || 'Could not delete this quiz.', 'error');
+  }
+}
+
+
+// ===== PREMIUM / PAYMENT =====
+function openPremiumModal() {
+  if (!currentUser) {
+    showToast('Please log in first!', 'warning');
+    openModal('login-modal');
+    return;
+  }
+  openModal('premium-modal');
+}
+
+function closePremiumModal() {
+  closeModal('premium-modal');
+}
+
+function updatePremiumBadge() {
+  const badge = document.getElementById('premium-badge');
+  const upgradeSection = document.getElementById('sidebar-upgrade');
+  const premiumText = document.getElementById('premium-text');
+
+  if (badge) {
+    if (currentUser && currentUser.isPaid) {
+      badge.innerHTML = '<i class="fas fa-crown"></i> <span id="premium-text">Premium</span>';
+      badge.style.background = 'rgba(252,221,9,0.15)';
+      badge.style.borderColor = 'rgba(252,221,9,0.3)';
+      badge.style.color = 'var(--ethYellow)';
+      badge.style.cursor = 'default';
+      badge.onclick = null;
+      if (upgradeSection) upgradeSection.style.display = 'none';
+    } else {
+      badge.innerHTML = '<i class="fas fa-lock"></i> <span id="premium-text">Free</span>';
+      badge.style.background = 'rgba(107,114,128,0.1)';
+      badge.style.borderColor = 'rgba(107,114,128,0.2)';
+      badge.style.color = 'var(--muted)';
+      badge.style.cursor = 'pointer';
+      badge.onclick = function() { openPremiumModal(); };
+      if (upgradeSection) upgradeSection.style.display = 'block';
+    }
+  }
+}
+
+// ===== ADD COURSE (ADMIN) =====
+// Creates the course only. Its cheat sheet, summary and detailed explanation
+// are uploaded afterwards from the course card (see saveMaterial).
+function toggleAddCourseForm() {
+  const form = document.getElementById('add-course-form');
+  form.classList.toggle('hidden');
+  if (!form.classList.contains('hidden')) {
+    const select = document.getElementById('add-dept');
+    select.innerHTML = departments.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+    select.value = currentViewDept || currentUser.dept || departments[0].name;
+    document.getElementById('add-year').value = String(currentYear);
+  }
+}
+
+async function submitAddCourse() {
+  const dept = document.getElementById('add-dept').value;
+  const year = parseInt(document.getElementById('add-year').value);
+  const title = document.getElementById('add-title').value.trim();
+  const desc = document.getElementById('add-desc').value.trim();
+
+  if (!title) { document.getElementById('add-title-error').classList.add('show'); return; }
+  document.getElementById('add-title-error').classList.remove('show');
+
+  const submitBtn = document.getElementById('add-course-submit-btn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Adding...';
+
+  try {
+    await apiRequest('/courses', {
+      method: 'POST',
+      body: { title, description: desc || title, department: dept, year, isPublished: true }
+    });
+
+    showToast('Course added. Open it to upload its materials.', 'success');
+    toggleAddCourseForm();
+
+    document.getElementById('add-title').value = '';
+    document.getElementById('add-desc').value = '';
+
+    if ((currentViewDept || currentUser.dept) === dept && currentYear === year) {
+      renderDashboardCourses();
+    }
+  } catch (err) {
+    showToast(err.message || 'Could not add the course. Please try again.', 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Add Course';
+  }
+}
+
+async function deleteCourse(courseId) {
+  if (!confirm('Are you sure you want to delete this course?')) return;
+  try {
+    await apiRequest('/courses/' + courseId, { method: 'DELETE' });
+    renderDashboardCourses();
+    showToast('Course deleted.', 'info');
+  } catch (err) {
+    showToast(err.message || 'Could not delete this course.', 'error');
+  }
+}
+
+async function editCourse(courseId) {
+  const title = prompt('New course title (leave empty to keep it):');
+  const description = prompt('New description (leave empty to keep it):');
+  const body = {};
+  if (title && title.trim()) body.title = title.trim();
+  if (description && description.trim()) body.description = description.trim();
+  if (!Object.keys(body).length) return;
+  try {
+    await apiRequest('/courses/' + courseId, { method: 'PATCH', body });
+    showToast('Course updated.', 'success');
+    renderDashboardCourses();
+  } catch (err) {
+    showToast(err.message || 'Could not update this course.', 'error');
+  }
+}
+
+// ===== SETTINGS =====
+function saveSettings() {
+  showToast('To change your name, stream or semester, please contact the admin.', 'info');
+}
+
+function deleteAccount() {
+  showToast('To delete your account, please contact the admin.', 'info');
+}
+
+// ===== POPULATE SELECTS =====
+function populateSelects() {
+  const deptOptions = departments.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+  document.getElementById('reg-dept').innerHTML = deptOptions;
+  document.getElementById('settings-dept').innerHTML = deptOptions;
+  updateRegYearOptions();
+}
+
+function buildYearOptions(selectEl, maxYear) {
+  const current = selectEl.value;
+  let html = '';
+  for (let y = 1; y <= maxYear; y++) {
+    html += `<option value="${y}">Semester ${y}</option>`;
+  }
+  selectEl.innerHTML = html;
+  // Keep the previous selection if it is still valid for the chosen stream;
+  // otherwise this falls back to Semester 1.
+  if (current && parseInt(current) <= maxYear) selectEl.value = current;
+}
+
+async function updateRegYearOptions() {
+  const streamName = document.getElementById('reg-dept').value;
+  if (!streamName) return;
+  try {
+    const depts = await getRealDepartments();
+    const match = depts.find(d => d.name === streamName);
+    buildYearOptions(document.getElementById('reg-year'), match ? match.maxYear : 2);
+  } catch (e) { /* keep whatever options are already there if this fails */ }
+}
+
+// ===== THEME TOGGLE =====
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.classList.toggle('light-mode', !isDark);
+  document.body.style.background = isDark ? '#0A1225' : '#F8FAFC';
+  document.body.style.color = isDark ? '#F0F4F8' : '#0A1628';
+  const nav = document.getElementById('main-nav');
+  nav.style.background = isDark ? 'rgba(10,22,40,0.85)' : 'rgba(248,250,252,0.85)';
+  document.getElementById('theme-icon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+}
+
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const icon = document.getElementById('menu-icon');
+  menu.classList.toggle('hidden');
+  icon.className = menu.classList.contains('hidden') ? 'fas fa-bars' : 'fas fa-times';
+}
+
+// ===== SEARCH =====
+function toggleSearch() {
+  const overlay = document.getElementById('search-overlay');
+  overlay.classList.toggle('active');
+  if (overlay.classList.contains('active')) {
+    setTimeout(() => document.getElementById('search-input').focus(), 100);
+  }
+}
+
+function handleSearch(query) {
+  const results = document.getElementById('search-results');
+  if (!query.trim()) {
+    results.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;">Start typing to search streams and courses...</p>';
+    return;
+  }
+  const q = query.toLowerCase();
+  const matchedStreams = departments.filter(d => d.name.toLowerCase().includes(q));
+
+  const matchedCourses = [];
+  Object.keys(CATALOG).forEach(stream => {
+    [1, 2].forEach(sem => {
+      (CATALOG[stream][sem] || []).forEach(title => {
+        if (title.toLowerCase().includes(q) || stream.toLowerCase().includes(q)) {
+          matchedCourses.push({ name: title, stream, sem });
+        }
+      });
+    });
+  });
+
+  const rowStyle = 'display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 12px; cursor: pointer; transition: all 0.2s;';
+  let html = '';
+  if (matchedStreams.length) {
+    html += '<p style="font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--accent);">Streams</p>';
+    matchedStreams.forEach(d => {
+      html += `<div style="${rowStyle}" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'" onclick="toggleSearch();openDepartment('${d.name}')">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: ${d.color}20; color: ${d.color}; display: flex; align-items: center; justify-content: center;"><i class="fas ${d.icon}"></i></div>
+        <span style="font-size: 0.875rem; color: var(--fg); flex: 1;">${d.name}</span>
+        <span style="font-size: 0.75rem; color: var(--muted);">${courseCountFor(d.name)} courses</span>
+      </div>`;
+    });
+  }
+  if (matchedCourses.length) {
+    html += '<p style="font-size: 0.75rem; font-weight: 700; margin: 1rem 0 0.75rem; color: var(--accent);">Courses</p>';
+    matchedCourses.slice(0, 20).forEach(c => {
+      html += `<div style="${rowStyle}" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'" onclick="toggleSearch();openDepartment('${c.stream}')">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(7,137,48,0.15); color: var(--ethGreen); display: flex; align-items: center; justify-content: center;"><i class="fas fa-book"></i></div>
+        <span style="font-size: 0.875rem; color: var(--fg); flex: 1;">${escapeHtml(c.name)}</span>
+        <span style="font-size: 0.75rem; color: var(--muted);">${c.stream} · Semester ${c.sem}</span>
+      </div>`;
+    });
+  }
+  if (!matchedStreams.length && !matchedCourses.length) {
+    html = '<p style="color: var(--muted); font-size: 0.875rem;">No results found. Try a different search term.</p>';
+  }
+  results.innerHTML = html;
+}
+
+// ===== MODALS =====
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.body.style.overflow = '';
+  // Reset auth modal
+  if (id === 'login-modal') {
+    setTimeout(() => {
+      document.querySelector('.tabs').classList.remove('hidden');
+      document.getElementById('verify-step').classList.add('hidden');
+      switchAuthTab('login');
+      document.querySelectorAll('.form-error').forEach(e => e.classList.remove('show'));
+    }, 300);
+  }
+}
+
+// ===== CHAT =====
+function toggleChat() {
+  const window = document.getElementById('chat-window');
+  const icon = document.getElementById('chat-toggle-icon');
+  window.classList.toggle('active');
+  icon.className = window.classList.contains('active') ? 'fas fa-times' : 'fas fa-robot';
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const container = document.getElementById('chat-messages');
+  container.innerHTML += `<div class="chat-bubble chat-bubble-user"><p>${escapeHtml(msg)}</p></div>`;
+  input.value = '';
+  container.scrollTop = container.scrollHeight;
+
+  // Typing indicator
+  container.innerHTML += `<div id="typing" class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  container.scrollTop = container.scrollHeight;
+
+  const lower = msg.toLowerCase();
+  let responseKey = 'default';
+  if (lower.includes('pay') || lower.includes('premium') || lower.includes('price') || lower.includes('telebirr') || lower.includes('unlock')) responseKey = 'pay';
+  else if (lower.includes('exam') || lower.includes('test') || lower.includes('quiz')) responseKey = 'exam';
+  else if (lower.includes('course') || lower.includes('learn') || lower.includes('study') || lower.includes('class') || lower.includes('material') || lower.includes('semester')) responseKey = 'course';
+
+  setTimeout(() => {
+    const typing = document.getElementById('typing');
+    if (typing) typing.remove();
+    container.innerHTML += `<div class="chat-bubble chat-bubble-ai"><p>${chatResponses[responseKey]}</p></div>`;
+    container.scrollTop = container.scrollHeight;
+  }, 1200);
+}
+
+function escapeHtml(text) {
+  return String(text == null ? '' : text)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ===== TOAST =====
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  const colors = {
+    success: 'toast-success',
+    warning: 'toast-warning',
+    error: 'toast-error',
+    info: 'toast-info'
+  };
+  const icons = { success: 'fa-check-circle', warning: 'fa-exclamation-triangle', error: 'fa-times-circle', info: 'fa-info-circle' };
+  toast.className = `toast ${colors[type] || colors.info}`;
+  const icon = document.createElement('i');
+  icon.className = `fas ${icons[type] || icons.info}`;
+  const span = document.createElement('span');
+  span.textContent = String(message);
+  toast.append(icon, span);
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+// ===== SCROLL ANIMATIONS =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+function initAnimations() {
+  document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+}
+
+function scrollToSection(id) {
+  const dash = document.getElementById('dashboard-view');
+  if (dash && !dash.classList.contains('hidden')) {
+    showHome();
+    setTimeout(() => { const t = document.getElementById(id); if (t) t.scrollIntoView({ behavior: 'smooth' }); }, 50);
+    return;
+  }
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== COUNTER ANIMATION =====
+function animateCounters() {
+  const counters = document.querySelectorAll('.counter');
+  counters.forEach(counter => {
+    const target = parseInt(counter.dataset.target);
+    const suffix = counter.dataset.suffix !== undefined ? counter.dataset.suffix : '+';
+    const duration = 2000;
+    const step = target / (duration / 16);
+    let current = 0;
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= target) {
+        current = target;
+        clearInterval(timer);
+      }
+      counter.textContent = Math.floor(current).toLocaleString() + suffix;
+    }, 16);
+  });
+}
+
+// ===== HERO PARTICLES =====
+function createParticles() {
+  const container = document.getElementById('hero-particles');
+  const colors = ['#078930', '#FCDD09', '#DA121A', '#1DB954'];
+  for (let i = 0; i < 20; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    particle.style.cssText = `width: ${size}px; height: ${size}px; background: ${colors[Math.floor(Math.random() * colors.length)]}; left: ${Math.random() * 100}%; bottom: -10px; animation-duration: ${Math.random() * 15 + 10}s; animation-delay: ${Math.random() * 10}s; opacity: 0.4;`;
+    container.appendChild(particle);
+  }
+}
+
+// ===== NAV SCROLL BEHAVIOR =====
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('main-nav');
+  const currentScroll = window.scrollY;
+  if (currentScroll > 100) {
+    nav.style.boxShadow = '0 4px 30px rgba(0,0,0,0.3)';
+  } else {
+    nav.style.boxShadow = 'none';
+  }
+  lastScroll = currentScroll;
+});
+async function handlePaymentSubmit(e) {
+  e.preventDefault();
+  if (!currentUser) {
+    showToast('Please log in first!', 'warning');
+    return;
+  }
+
+  const methodSelect = document.getElementById('pay-method');
+  const method = methodSelect.value;
+  const fileInput = document.getElementById('pay-screenshot');
+  const file = fileInput.files[0];
+
+  if (!method) { showToast('Please select a payment method.', 'warning'); return; }
+  if (!file) { showToast('Please attach your payment screenshot.', 'warning'); return; }
+
+  const submitBtn = document.getElementById('pay-submit-btn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
+
+  try {
+    // Step 1: ask the backend for a one-time signed upload URL.
+    const uploadInfo = await apiRequest('/payments/upload-url', {
+      method: 'POST',
+      body: { originalFilename: file.name, mimeType: file.type, sizeBytes: file.size }
+    });
+
+    // Step 2: upload the actual file straight to storage using that URL.
+    const uploadRes = await fetch(uploadInfo.uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type },
+      body: file
+    });
+    if (!uploadRes.ok) throw new Error('File upload failed. Please try again.');
+
+    // Step 3: submit the payment record referencing the uploaded proof.
+    await apiRequest('/payments', {
+      method: 'POST',
+      body: { amount: PREMIUM_PRICE_ETB, method, proofStorageKey: uploadInfo.storageKey }
+    });
+
+    showToast('Payment proof submitted! An admin will verify and activate your account within 24 hours.', 'success');
+    setTimeout(() => closeModal('premium-modal'), 1000);
+  } catch (err) {
+    showToast(err.message || 'Could not submit your payment. Please try again.', 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Submit Payment Proof';
+  }
+}
+
+// ===== ADMIN: PENDING PAYMENTS =====
+async function renderAdminPaymentsList() {
+  const container = document.getElementById('admin-payments-list');
+  if (!container) return;
+  container.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+
+  try {
+    const data = await apiRequest('/admin/payments?status=pending');
+    const payments = data.payments;
+
+    if (payments.length === 0) {
+      container.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;">No pending payments right now.</p>';
+      return;
+    }
+
+    container.innerHTML = payments.map(p => `
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: 600; font-size: 0.875rem; color: var(--fg);">${escapeHtml(p.user ? p.user.name : 'Unknown')}</span>
+          <span style="font-size: 0.75rem; color: var(--muted);">${escapeHtml(p.user ? p.user.email : '')} · ${p.amount} ${p.currency} · ${escapeHtml(p.method)}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <button onclick="adminViewProof('${p.id}')" style="padding: 0.375rem 0.75rem; border-radius: 8px; background: rgba(59,130,246,0.1); color: #3B82F6; border: none; font-size: 0.75rem; font-weight: 600; cursor: pointer;"><i class="fas fa-image"></i> View Proof</button>
+          <button onclick="adminApprovePayment('${p.id}')" style="padding: 0.375rem 0.75rem; border-radius: 8px; background: rgba(7,137,48,0.1); color: var(--ethGreen); border: none; font-size: 0.75rem; font-weight: 600; cursor: pointer;"><i class="fas fa-check"></i> Approve</button>
+          <button onclick="adminRejectPayment('${p.id}')" style="padding: 0.375rem 0.75rem; border-radius: 8px; background: rgba(218,18,26,0.1); color: var(--ethRed); border: none; font-size: 0.75rem; font-weight: 600; cursor: pointer;"><i class="fas fa-times"></i> Reject</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    container.innerHTML = `<p style="color: var(--ethRed); font-size: 0.875rem;">${escapeHtml(err.message || 'Could not load payments.')}</p>`;
+  }
+}
+
+async function adminViewProof(paymentId) {
+  const win = window.open('', '_blank');
+  try {
+    const data = await apiRequest(`/admin/payments/${paymentId}/proof-url`);
+    const url = safeHttpUrl(data.proofUrl || data.downloadUrl);
+    if (!url) throw new Error('Invalid proof link.');
+    if (win) { win.opener = null; win.location.href = url; } else { window.location.href = url; }
+  } catch (err) {
+    if (win) win.close();
+    showToast(err.message || 'Could not load the payment proof.', 'error');
+  }
+}
+
+async function adminApprovePayment(paymentId) {
+  if (!confirm('Approve this payment and grant premium access?')) return;
+  try {
+    await apiRequest(`/admin/payments/${paymentId}/approve`, { method: 'PATCH' });
+    showToast('Payment approved — premium access granted.', 'success');
+    renderAdminPaymentsList();
+  } catch (err) {
+    showToast(err.message || 'Could not approve this payment.', 'error');
+  }
+}
+
+async function adminRejectPayment(paymentId) {
+  const reason = prompt('Reason for rejecting this payment (shown to the student):');
+  if (!reason) return;
+  try {
+    await apiRequest(`/admin/payments/${paymentId}/reject`, { method: 'PATCH', body: { reason } });
+    showToast('Payment rejected.', 'info');
+    renderAdminPaymentsList();
+  } catch (err) {
+    showToast(err.message || 'Could not reject this payment.', 'error');
+  }
+}
+
+// ===== ADMIN: FORCE LOGOUT =====
+async function adminForceLogoutByEmail() {
+  const email = document.getElementById('admin-forcelogout-email').value.trim().toLowerCase();
+  if (!email) { showToast('Please enter a user email.', 'warning'); return; }
+
+  try {
+    const data = await apiRequest('/admin/users?search=' + encodeURIComponent(email));
+    const match = data.users.find(u => u.email === email);
+    if (!match) { showToast('User not found: ' + email, 'error'); return; }
+
+    await apiRequest(`/admin/users/${match.id}/force-logout`, { method: 'POST' });
+    showToast(match.name + ' has been logged out of all devices.', 'success');
+    document.getElementById('admin-forcelogout-email').value = '';
+  } catch (err) {
+    showToast(err.message || 'Could not force logout this user.', 'error');
+  }
+}
+
+// ===== ADMIN: ALL USERS =====
+async function renderAdminUsersList() {
+  const container = document.getElementById('admin-users-list');
+  if (!container) return;
+  container.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+
+  try {
+    const data = await apiRequest('/admin/users?pageSize=100');
+    const userList = data.users;
+
+    if (userList.length === 0) {
+      container.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;">No users registered yet.</p>';
+      return;
+    }
+
+    container.innerHTML = userList.map(u => {
+      const statusColor = u.isPaid ? 'var(--ethGreen)' : 'var(--muted)';
+      const statusIcon = u.isPaid ? 'fa-check-circle' : 'fa-lock';
+      const statusText = u.isPaid ? 'Premium' : 'Free';
+      const isAdminBadge = u.isAdmin ? '<span style="margin-left: 0.5rem; padding: 0.125rem 0.5rem; border-radius: 999px; background: rgba(252,221,9,0.15); color: var(--ethYellow); font-size: 0.625rem; font-weight: 700;">ADMIN</span>' : '';
+
+      return `<div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: 600; font-size: 0.875rem; color: var(--fg);">${escapeHtml(u.name)}${isAdminBadge}</span>
+          <span style="font-size: 0.75rem; color: var(--muted);">${escapeHtml(u.email)} · ${escapeHtml(u.dept)} · ${u.year ? 'Semester ' + u.year : 'No semester'}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 0.75rem; color: ${statusColor}; font-weight: 600; display: flex; align-items: center; gap: 0.25rem;"><i class="fas ${statusIcon}"></i> ${statusText}</span>
+          ${!u.isAdmin ? `
+            <button onclick="adminSuspendUser('${u.id}')" style="padding: 0.375rem 0.75rem; border-radius: 8px; background: rgba(218,18,26,0.1); color: var(--ethRed); border: none; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Suspend</button>
+            <button onclick="adminReactivateUser('${u.id}')" style="padding: 0.375rem 0.75rem; border-radius: 8px; background: rgba(7,137,48,0.1); color: var(--ethGreen); border: none; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Reactivate</button>
+          ` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `<p style="color: var(--ethRed); font-size: 0.875rem;">${escapeHtml(err.message || 'Could not load users.')}</p>`;
+  }
+}
+
+async function adminSuspendUser(userId) {
+  if (!confirm('Suspend this user? They will be logged out and unable to log back in until reactivated.')) return;
+  try {
+    await apiRequest(`/admin/users/${userId}/suspend`, { method: 'PATCH' });
+    showToast('User suspended.', 'info');
+    renderAdminUsersList();
+  } catch (err) {
+    showToast(err.message || 'Could not suspend this user.', 'error');
+  }
+}
+
+async function adminReactivateUser(userId) {
+  try {
+    await apiRequest(`/admin/users/${userId}/reactivate`, { method: 'PATCH' });
+    showToast('User reactivated.', 'success');
+    renderAdminUsersList();
+  } catch (err) {
+    showToast(err.message || 'Could not reactivate this user.', 'error');
+  }
+}
+</script>
+</body>
+</html>
