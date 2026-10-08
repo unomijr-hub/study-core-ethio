@@ -2006,11 +2006,15 @@ async function openCourseDetail(courseId) {
   }
 }
 
+let pdfObserver = null;
+let pdfDocument = null;
+
 async function downloadCourseFile(courseId, fileId, title) {
   const body = document.getElementById('pdf-viewer-body');
   document.getElementById('pdf-modal-title').textContent = title || 'Document';
   body.innerHTML = '<p style="text-align:center;padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
   openModal('pdf-modal');
+  teardownPdfViewer();
   try {
     if (!window.pdfjsLib) throw new Error('The PDF viewer could not load. Check your connection and try again.');
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -2018,27 +2022,65 @@ async function downloadCourseFile(courseId, fileId, title) {
     const url = safeHttpUrl(data.downloadUrl);
     if (!url) throw new Error('This file has an invalid link.');
     const pdf = await pdfjsLib.getDocument({ url }).promise;
+    pdfDocument = pdf;
     body.innerHTML = '';
+
     const mark = currentUser ? currentUser.email : '';
     const width = Math.min(body.clientWidth - 16, 860);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2); // sharper than 2x only wastes memory
+    const first = await pdf.getPage(1);
+    const base = first.getViewport({ scale: 1 });
+    const pageHeight = Math.round(width * (base.height / base.width));
+
+    // One empty, correctly sized box per page. Pages are drawn only when they
+    // come near the screen and are cleared again when they scroll far away, so
+    // a 100-page file never needs 100 canvases in memory at once.
+    const renderPage = async (wrap) => {
+      const n = Number(wrap.dataset.page);
+      if (wrap.dataset.state === 'drawn' || wrap.dataset.state === 'drawing') return;
+      wrap.dataset.state = 'drawing';
+      try {
+        const page = await pdf.getPage(n);
+        const vp = page.getViewport({ scale: (width / page.getViewport({ scale: 1 }).width) * dpr });
+        const canvas = document.createElement('canvas');
+        canvas.width = vp.width; canvas.height = vp.height;
+        canvas.style.cssText = 'width:100%;height:auto;display:block;border-radius:6px;';
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+        if (wrap.dataset.visible === '0' || !wrap.isConnected) { wrap.dataset.state = 'empty'; return; }
+        wrap.insertBefore(canvas, wrap.firstChild);
+        wrap.dataset.state = 'drawn';
+      } catch (e) {
+        wrap.dataset.state = 'empty';
+      }
+    };
+
+    pdfObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const wrap = entry.target;
+        wrap.dataset.visible = entry.isIntersecting ? '1' : '0';
+        if (entry.isIntersecting) {
+          renderPage(wrap);
+        } else if (wrap.dataset.state === 'drawn') {
+          const canvas = wrap.querySelector('canvas');
+          if (canvas) { canvas.width = 0; canvas.height = 0; canvas.remove(); }
+          wrap.dataset.state = 'empty';
+        }
+      });
+    }, { root: body, rootMargin: '700px 0px' });
+
     for (let n = 1; n <= pdf.numPages; n++) {
-      const page = await pdf.getPage(n);
-      const base = page.getViewport({ scale: 1 });
-      const scale = (width / base.width) * (window.devicePixelRatio || 1);
-      const vp = page.getViewport({ scale });
       const wrap = document.createElement('div');
-      wrap.style.cssText = `position:relative;margin:0 auto 0.75rem;width:${width}px;`;
-      const canvas = document.createElement('canvas');
-      canvas.width = vp.width; canvas.height = vp.height;
-      canvas.style.cssText = 'width:100%;height:auto;display:block;border-radius:6px;';
-      wrap.appendChild(canvas);
+      wrap.dataset.page = String(n);
+      wrap.dataset.state = 'empty';
+      wrap.dataset.visible = '0';
+      wrap.style.cssText = `position:relative;margin:0 auto 0.75rem;width:${width}px;height:${pageHeight}px;background:rgba(127,127,127,0.08);border-radius:6px;`;
       // Watermark with the viewer's email on every page (discourages sharing).
       const wm = document.createElement('div');
       wm.textContent = mark;
-      wm.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:1.6rem;font-weight:700;color:rgba(120,120,120,0.22);transform:rotate(-30deg);white-space:nowrap;overflow:hidden;';
+      wm.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:1.6rem;font-weight:700;color:rgba(120,120,120,0.22);transform:rotate(-30deg);white-space:nowrap;overflow:hidden;z-index:2;';
       wrap.appendChild(wm);
       body.appendChild(wrap);
-      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+      pdfObserver.observe(wrap);
     }
   } catch (err) {
     body.innerHTML = '';
@@ -2049,7 +2091,14 @@ async function downloadCourseFile(courseId, fileId, title) {
   }
 }
 
+// Stop drawing and release the PDF's memory.
+function teardownPdfViewer() {
+  if (pdfObserver) { pdfObserver.disconnect(); pdfObserver = null; }
+  if (pdfDocument) { try { pdfDocument.destroy(); } catch (e) { /* ignore */ } pdfDocument = null; }
+}
+
 function closePdfViewer() {
+  teardownPdfViewer();
   document.getElementById('pdf-viewer-body').innerHTML = '';
   closeModal('pdf-modal');
 }
