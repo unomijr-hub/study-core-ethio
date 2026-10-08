@@ -911,6 +911,12 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
       </div>
 
       <div class="form-group">
+        <label class="form-label"><i class="fas fa-receipt" style="margin-right: 0.25rem;"></i>Transaction / Receipt Number</label>
+        <input type="text" id="pay-ref" class="form-input" placeholder="e.g. FT26281ABCDE" maxlength="40" autocomplete="off" required>
+        <p style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;">Find it on your Telebirr or CBE receipt (it is printed as the transaction or reference number)</p>
+      </div>
+
+      <div class="form-group">
         <label class="form-label"><i class="fas fa-image" style="margin-right: 0.25rem;"></i>Payment Screenshot</label>
         <input type="file" id="pay-screenshot" accept="image/*,.pdf" class="form-input" required style="padding: 0.5rem;">
         <p style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;">JPG, PNG, WebP, or PDF — screenshot of payment confirmation</p>
@@ -2670,7 +2676,10 @@ async function handlePaymentSubmit(e) {
   const fileInput = document.getElementById('pay-screenshot');
   const file = fileInput.files[0];
 
+  const transactionRef = document.getElementById('pay-ref').value.trim();
+
   if (!method) { showToast('Please select a payment method.', 'warning'); return; }
+  if (transactionRef.replace(/\s+/g, '').length < 6) { showToast('Please enter the transaction / receipt number from your receipt.', 'warning'); return; }
   if (!file) { showToast('Please attach your payment screenshot.', 'warning'); return; }
 
   const submitBtn = document.getElementById('pay-submit-btn');
@@ -2695,7 +2704,7 @@ async function handlePaymentSubmit(e) {
     // Step 3: submit the payment record referencing the uploaded proof.
     await apiRequest('/payments', {
       method: 'POST',
-      body: { amount: PREMIUM_PRICE_ETB, method, proofStorageKey: uploadInfo.storageKey }
+      body: { amount: PREMIUM_PRICE_ETB, method, proofStorageKey: uploadInfo.storageKey, transactionRef }
     });
 
     showToast('Payment proof submitted! An admin will verify and activate your account within 24 hours.', 'success');
@@ -2761,7 +2770,7 @@ async function renderAdminPaymentsList() {
       <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem;">
         <div style="display: flex; flex-direction: column;">
           <span style="font-weight: 600; font-size: 0.875rem; color: var(--fg);">${escapeHtml(p.user ? p.user.name : 'Unknown')}</span>
-          <span style="font-size: 0.75rem; color: var(--muted);">${escapeHtml(p.user ? p.user.email : '')} · ${p.amount} ${p.currency} · ${escapeHtml(p.method)}</span>
+          <span style="font-size: 0.75rem; color: var(--muted);">${escapeHtml(p.user ? p.user.email : '')} · ${p.amount} ${p.currency} · ${escapeHtml(p.method)}${p.transactionRef ? ' · Ref: ' + escapeHtml(p.transactionRef) : ''}</span>
         </div>
         <div style="display: flex; align-items: center; gap: 0.5rem;">
           <button onclick="adminViewProof('${p.id}')" style="padding: 0.375rem 0.75rem; border-radius: 8px; background: rgba(59,130,246,0.1); color: #3B82F6; border: none; font-size: 0.75rem; font-weight: 600; cursor: pointer;"><i class="fas fa-image"></i> View Proof</button>
