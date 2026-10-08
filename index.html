@@ -665,6 +665,7 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
       <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); margin-bottom: 1.5rem;">
         <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-crown" style="color: var(--ethYellow); margin-right: 0.5rem;"></i>Pending Payments</h3>
         <div id="admin-payments-list" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        <div id="admin-payments-pager"></div>
       </div>
 
       <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); margin-bottom: 1.5rem;">
@@ -683,7 +684,16 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
 
       <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border);">
         <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-users" style="color: var(--ethGreen); margin-right: 0.5rem;"></i>All Registered Users</h3>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+          <input type="text" id="admin-user-search" class="form-input" style="flex: 1; min-width: 180px;" placeholder="Search by name or email..." oninput="adminUsersSearchInput(this.value)">
+          <select id="admin-user-filter" class="form-input" style="width: auto;" onchange="adminUsersFilterChange(this.value)">
+            <option value="">All users</option>
+            <option value="true">Premium only</option>
+            <option value="false">Free only</option>
+          </select>
+        </div>
         <div id="admin-users-list" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        <div id="admin-users-pager"></div>
       </div>
     </div>
 
@@ -957,6 +967,23 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
     <div class="form-group">
       <label class="form-label">Passing Score (%)</label>
       <input type="number" id="qb-passing" class="form-input" value="60" min="1" max="100">
+    </div>
+    <div class="form-group" style="padding: 1rem; border-radius: 12px; background: var(--bg); border: 1px dashed var(--border);">
+      <label class="form-label"><i class="fas fa-paste" style="margin-right: 0.35rem;"></i>Paste many questions at once</label>
+      <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;">One question per block. Choices start with A) B) C) D). Mark the correct one with a * after the letter (like <b>*B) text</b>) or add a line <b>Answer: B</b>.</p>
+      <textarea id="qb-bulk" class="form-input" rows="7" style="font-family: monospace; font-size: 0.8125rem;" placeholder="1. What is the capital of Ethiopia?
+A) Nairobi
+*B) Addis Ababa
+C) Cairo
+D) Accra
+
+2. Which river is the longest?
+A) Abay
+B) Nile
+C) Congo
+Answer: B"></textarea>
+      <button type="button" class="btn-ghost w-full" style="padding: 0.625rem; margin-top: 0.5rem;" onclick="importBulkQuestions()"><i class="fas fa-file-import mr-2"></i> Import these questions</button>
+      <p id="qb-bulk-status" style="font-size: 0.8125rem; margin-top: 0.5rem;"></p>
     </div>
     <div id="qb-questions"></div>
     <button type="button" class="btn-ghost w-full" style="padding: 0.75rem; margin-bottom: 1rem;" onclick="addBuilderQuestion()"><i class="fas fa-plus mr-2"></i> Add Question</button>
@@ -2116,8 +2143,9 @@ function openQuizBuilder(courseId) {
   openModal('quiz-builder-modal');
 }
 
-function addBuilderQuestion() {
+function addBuilderQuestion(prefill) {
   const qIndex = qbQuestionCount++;
+  const choiceCount = Math.max(4, prefill ? prefill.choices.length : 0);
   const container = document.getElementById('qb-questions');
   const block = document.createElement('div');
   block.id = 'qb-q-' + qIndex;
@@ -2129,14 +2157,75 @@ function addBuilderQuestion() {
     </div>
     <input type="text" class="form-input qb-question-text" placeholder="Question text" style="margin-bottom: 0.5rem;">
     <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;">Select the radio button next to the correct choice:</p>
-    ${[0, 1, 2, 3].map(i => `
+    ${Array.from({ length: choiceCount }, (_, i) => i).map(i => `
       <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.375rem;">
-        <input type="radio" name="qb-correct-${qIndex}" value="${i}" ${i === 0 ? 'checked' : ''}>
+        <input type="radio" name="qb-correct-${qIndex}" value="${i}" ${i === (prefill ? prefill.correct : 0) ? 'checked' : ''}>
         <input type="text" class="form-input qb-choice-text" placeholder="Choice ${i + 1}" style="flex: 1;">
       </div>
     `).join('')}
   `;
+  if (prefill) {
+    // Set values through the DOM (not the HTML string) so quotes/symbols are safe.
+    block.querySelector('.qb-question-text').value = prefill.text;
+    block.querySelectorAll('.qb-choice-text').forEach((input, i) => { input.value = prefill.choices[i] || ''; });
+  }
   container.appendChild(block);
+}
+
+// Parses pasted text into questions. Accepts:
+//   1. Question text            (the number is optional)
+//   A) choice / B. choice / *C) correct choice / D) correct choice *
+//   Answer: B                   (optional, instead of a * mark)
+function parseBulkQuestions(text) {
+  const questions = [];
+  const problems = [];
+  let cur = null;
+  const finish = () => {
+    if (!cur) return;
+    const n = questions.length + problems.length + 1;
+    const q = { text: cur.text.trim(), choices: cur.choices.map(c => c.text), correct: cur.correct };
+    if (!q.text) problems.push('Question ' + n + ' has no question text');
+    else if (q.choices.length < 2) problems.push('Question ' + n + ' has fewer than 2 choices');
+    else if (q.correct < 0) problems.push('Question ' + n + ' has no correct answer marked');
+    else questions.push(q);
+    cur = null;
+  };
+  for (const raw of text.replace(/\r/g, '').split('\n')) {
+    const line = raw.trim();
+    if (!line) continue;
+    const ans = line.match(/^(?:answer|ans|correct)\s*[:\-]?\s*\(?([A-Fa-f])\)?\s*$/i);
+    if (ans && cur && cur.choices.length) { cur.correct = ans[1].toUpperCase().charCodeAt(0) - 65; continue; }
+    const ch = line.match(/^(\*?)\s*\(?([A-Fa-f])[\)\.:]\s*(.+?)\s*(\*?)$/);
+    if (ch && cur && (ch[2].toUpperCase().charCodeAt(0) - 65) === cur.choices.length) {
+      cur.choices.push({ text: ch[3].trim() });
+      if (ch[1] || ch[4]) cur.correct = cur.choices.length - 1;
+      continue;
+    }
+    // Not a choice or answer line: it is question text.
+    const t = line.replace(/^\d+\s*[\)\.:\-]\s*/, '');
+    if (cur && cur.choices.length === 0) cur.text += ' ' + t;
+    else { finish(); cur = { text: t, choices: [], correct: -1 }; }
+  }
+  finish();
+  return { questions, problems };
+}
+
+function importBulkQuestions() {
+  const status = document.getElementById('qb-bulk-status');
+  const text = document.getElementById('qb-bulk').value;
+  if (!text.trim()) { status.style.color = 'var(--ethRed)'; status.textContent = 'Paste your questions first.'; return; }
+  const { questions, problems } = parseBulkQuestions(text);
+  // Drop the empty starter question if nothing was typed into it.
+  document.querySelectorAll('#qb-questions > div').forEach(b => {
+    const empty = !b.querySelector('.qb-question-text').value.trim() &&
+      Array.from(b.querySelectorAll('.qb-choice-text')).every(i => !i.value.trim());
+    if (empty) b.remove();
+  });
+  questions.forEach(q => addBuilderQuestion(q));
+  document.getElementById('qb-bulk').value = '';
+  status.style.color = problems.length ? 'var(--ethRed)' : 'var(--ethGreen)';
+  status.textContent = 'Imported ' + questions.length + ' question(s). ' +
+    (problems.length ? 'Skipped: ' + problems.join('; ') + '. Re-paste only those after fixing them, or add them by hand below.' : 'Review them below, then press Create Quiz.');
 }
 
 async function submitQuizBuilder() {
@@ -2619,6 +2708,34 @@ async function handlePaymentSubmit(e) {
   }
 }
 
+// ===== ADMIN: PAGING HELPERS =====
+const ADMIN_PAGE_SIZE = 20;
+const adminUsersState = { page: 1, q: '', premium: '' };
+const adminPaymentsState = { page: 1 };
+let adminSearchTimer = null;
+
+// Builds "Previous | Page X of Y | Next" controls. `fn` is the name of the
+// global function that loads a page number (only our own constants are passed).
+function renderPagerHtml(meta, fn) {
+  if (!meta) return '';
+  const info = '<span style="font-size: 0.8125rem; color: var(--muted);">' + meta.total + ' total' + (meta.totalPages > 1 ? ' · Page ' + meta.page + ' of ' + meta.totalPages : '') + '</span>';
+  if (meta.totalPages <= 1) return '<div style="margin-top: 0.75rem; text-align: center;">' + info + '</div>';
+  const btn = 'padding: 0.4rem 0.9rem; font-size: 0.8125rem;';
+  return '<div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap;">' +
+    '<button class="btn-ghost" style="' + btn + '" ' + (meta.page <= 1 ? 'disabled' : '') + ' onclick="' + fn + '(' + (meta.page - 1) + ')">Previous</button>' +
+    info +
+    '<button class="btn-ghost" style="' + btn + '" ' + (meta.page >= meta.totalPages ? 'disabled' : '') + ' onclick="' + fn + '(' + (meta.page + 1) + ')">Next</button>' +
+    '</div>';
+}
+
+function adminPaymentsGoto(page) { adminPaymentsState.page = page; renderAdminPaymentsList(); }
+function adminUsersGoto(page) { adminUsersState.page = page; renderAdminUsersList(); }
+function adminUsersSearchInput(value) {
+  clearTimeout(adminSearchTimer);
+  adminSearchTimer = setTimeout(() => { adminUsersState.q = value.trim(); adminUsersState.page = 1; renderAdminUsersList(); }, 400);
+}
+function adminUsersFilterChange(value) { adminUsersState.premium = value; adminUsersState.page = 1; renderAdminUsersList(); }
+
 // ===== ADMIN: PENDING PAYMENTS =====
 async function renderAdminPaymentsList() {
   const container = document.getElementById('admin-payments-list');
@@ -2626,13 +2743,19 @@ async function renderAdminPaymentsList() {
   container.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
 
   try {
-    const data = await apiRequest('/admin/payments?status=pending');
+    const data = await apiRequest('/admin/payments?status=pending&page=' + adminPaymentsState.page + '&pageSize=' + ADMIN_PAGE_SIZE);
     const payments = data.payments;
+    const pager = document.getElementById('admin-payments-pager');
+
+    // The last item on a later page was just handled: step back one page.
+    if (payments.length === 0 && data.meta.page > 1) { adminPaymentsState.page = data.meta.page - 1; return renderAdminPaymentsList(); }
 
     if (payments.length === 0) {
       container.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;">No pending payments right now.</p>';
+      if (pager) pager.innerHTML = '';
       return;
     }
+    if (pager) pager.innerHTML = renderPagerHtml(data.meta, 'adminPaymentsGoto');
 
     container.innerHTML = payments.map(p => `
       <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem;">
@@ -2713,13 +2836,21 @@ async function renderAdminUsersList() {
   container.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
 
   try {
-    const data = await apiRequest('/admin/users?pageSize=100');
+    let url = '/admin/users?page=' + adminUsersState.page + '&pageSize=' + ADMIN_PAGE_SIZE;
+    if (adminUsersState.q) url += '&search=' + encodeURIComponent(adminUsersState.q);
+    if (adminUsersState.premium) url += '&isPremium=' + adminUsersState.premium;
+    const data = await apiRequest(url);
     const userList = data.users;
+    const pager = document.getElementById('admin-users-pager');
+
+    if (userList.length === 0 && data.meta.page > 1) { adminUsersState.page = data.meta.page - 1; return renderAdminUsersList(); }
 
     if (userList.length === 0) {
-      container.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;">No users registered yet.</p>';
+      container.innerHTML = '<p style="color: var(--muted); font-size: 0.875rem;">' + (adminUsersState.q || adminUsersState.premium ? 'No users match your search.' : 'No users registered yet.') + '</p>';
+      if (pager) pager.innerHTML = '';
       return;
     }
+    if (pager) pager.innerHTML = renderPagerHtml(data.meta, 'adminUsersGoto');
 
     container.innerHTML = userList.map(u => {
       const statusColor = u.isPaid ? 'var(--ethGreen)' : 'var(--muted)';
