@@ -1083,7 +1083,7 @@ let pendingRegistration = null;
 // logged in across page reloads (see restoreSession() below).
 // IMPORTANT: replace this with YOUR backend's address (from Render) once the
 // backend is deployed, e.g. 'https://studycore-api.onrender.com/api/v1'.
-const API_BASE = 'https://study-core-eth.onrender.com/api/v1';
+const API_BASE = '/api/v1'; // same-site: Render rewrites /api/* to the backend
 let accessToken = null;
 
 // Remember which button/tab/card the person just pressed, so the spinner
@@ -1125,7 +1125,7 @@ async function apiRequest(path, opts) {
 }
 
 async function apiRequestRaw(path, { method = 'GET', body, auth = true, retry = true } = {}) {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'studycore' };
   if (auth && accessToken) headers['Authorization'] = 'Bearer ' + accessToken;
 
   const res = await fetch(API_BASE + path, {
@@ -1164,7 +1164,7 @@ function tryRefresh() {
   if (refreshInFlight) return refreshInFlight;
   refreshInFlight = (async () => {
     try {
-      const res = await fetch(API_BASE + '/auth/refresh', { method: 'POST', credentials: 'include' });
+      const res = await fetch(API_BASE + '/auth/refresh', { method: 'POST', credentials: 'include', headers: { 'X-Requested-With': 'studycore' } });
       if (!res.ok) {
         if (res.status === 401 && currentUser) {
           // Session is really gone: drop stale UI state.
