@@ -669,6 +669,11 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
       <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem;">Review payments and manage users</p>
 
       <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); margin-bottom: 1.5rem;">
+        <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-lock" style="color: var(--ethGreen); margin-right: 0.5rem;"></i>Admin Security (2-step login)</h3>
+        <div id="admin-security-body"></div>
+      </div>
+
+      <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); margin-bottom: 1.5rem;">
         <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-crown" style="color: var(--ethYellow); margin-right: 0.5rem;"></i>Pending Payments</h3>
         <div id="admin-payments-list" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
         <div id="admin-payments-pager"></div>
@@ -772,6 +777,18 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
       <button type="submit" class="btn-primary w-full" style="padding: 0.875rem; margin-bottom: 0.75rem;"><i class="fas fa-sign-in-alt mr-2"></i> Log In</button>
       <p style="text-align: center; font-size: 0.75rem; color: var(--muted);">Don't have an account? <a href="#" onclick="switchAuthTab('register'); return false;" style="color: var(--ethGreen); text-decoration: none;">Sign up</a></p>
     </form>
+
+    <!-- LOGIN: 2-STEP CODE (admins with 2-step login turned on) -->
+    <div id="login-2fa-step" class="hidden">
+      <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 1rem;">Enter the 6-digit code from your authenticator app. Lost your phone? Type one of your backup codes instead.</p>
+      <div class="form-group">
+        <label class="form-label">Code</label>
+        <input type="text" id="login-2fa-code" class="form-input" inputmode="text" autocomplete="one-time-code" placeholder="123456" maxlength="20" onkeydown="if (event.key === 'Enter') { event.preventDefault(); handleLogin2fa(); }">
+        <div class="form-error" id="login-2fa-error"></div>
+      </div>
+      <button type="button" class="btn-primary w-full" style="padding: 0.875rem; margin-bottom: 0.5rem;" onclick="handleLogin2fa()"><i class="fas fa-shield-alt mr-2"></i> Verify and Log In</button>
+      <button type="button" class="btn-ghost w-full" style="padding: 0.875rem;" onclick="cancelLogin2fa()"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+    </div>
 
     <!-- FORGOT PASSWORD: REQUEST STEP -->
     <div id="forgot-request-step" class="hidden">
@@ -1355,6 +1372,7 @@ function switchAuthTab(tab) {
   document.querySelector('.tabs').classList.remove('hidden');
   document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
   document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
+  document.getElementById('login-2fa-step').classList.add('hidden');
   document.getElementById('verify-step').classList.add('hidden');
   document.getElementById('forgot-request-step').classList.add('hidden');
   document.getElementById('reset-password-step').classList.add('hidden');
@@ -1423,6 +1441,7 @@ async function handleLogin() {
 
   try {
     const data = await apiRequest('/auth/login', { method: 'POST', auth: false, body: { email, password } });
+    if (data.twoFactorRequired) { showLogin2faStep(data.challengeToken); return; }
     accessToken = data.accessToken;
     currentUser = data.user;
     updateNavForUser();
@@ -1440,6 +1459,127 @@ async function handleLogin() {
     }
     errorEl.classList.add('show');
   }
+}
+
+// ===== ADMIN 2-STEP LOGIN =====
+let pending2faToken = null;
+
+function showLogin2faStep(challengeToken) {
+  pending2faToken = challengeToken;
+  document.querySelector('.tabs').classList.add('hidden');
+  document.getElementById('form-login').classList.add('hidden');
+  document.getElementById('login-2fa-step').classList.remove('hidden');
+  document.getElementById('auth-modal-title').textContent = 'Two-Step Login';
+  document.getElementById('login-password').value = '';
+  const input = document.getElementById('login-2fa-code');
+  input.value = '';
+  input.focus();
+}
+
+function cancelLogin2fa() {
+  pending2faToken = null;
+  document.getElementById('login-2fa-code').value = '';
+  switchAuthTab('login');
+}
+
+async function handleLogin2fa() {
+  const errorEl = document.getElementById('login-2fa-error');
+  errorEl.classList.remove('show');
+  const code = document.getElementById('login-2fa-code').value.trim();
+  if (!code) {
+    errorEl.textContent = 'Please enter the code.';
+    errorEl.classList.add('show');
+    return;
+  }
+  try {
+    const data = await apiRequest('/auth/login/2fa', {
+      method: 'POST', auth: false, body: { challengeToken: pending2faToken, code }
+    });
+    pending2faToken = null;
+    accessToken = data.accessToken;
+    currentUser = data.user;
+    updateNavForUser();
+    closeModal('login-modal');
+    showToast('Welcome back, ' + currentUser.name + '!', 'success');
+    setTimeout(() => showDashboard(), 800);
+  } catch (err) {
+    if (err.code === 'TWO_FACTOR_CHALLENGE_INVALID') {
+      cancelLogin2fa();
+      const loginErr = document.getElementById('login-email-error');
+      loginErr.textContent = err.message || 'Your sign-in expired. Please log in again.';
+      loginErr.classList.add('show');
+      return;
+    }
+    errorEl.textContent = err.message || 'That code is not correct.';
+    errorEl.classList.add('show');
+  }
+}
+
+function renderAdminSecurity() {
+  const body = document.getElementById('admin-security-body');
+  if (!body || !currentUser || !currentUser.isAdmin) return;
+  if (currentUser.twoFactorEnabled) {
+    body.innerHTML = '<p style="font-size: 0.875rem; color: var(--ethGreen); margin-bottom: 0.5rem;"><i class="fas fa-check-circle mr-2"></i><strong>2-step login is ON.</strong> You are asked for a 6-digit code every time you log in.</p>' +
+      '<p style="font-size: 0.75rem; color: var(--muted);">Lost your phone? Use one of your backup codes at the code step.</p>';
+    return;
+  }
+  body.innerHTML = '<p style="font-size: 0.875rem; color: var(--muted); margin-bottom: 1rem;">2-step login is <strong style="color: var(--ethRed);">not turned on</strong>. Anyone who learns your password could log in as admin and approve payments. Turn it on now.</p>' +
+    '<button class="btn-primary" onclick="startTwoFactorSetup()" style="padding: 0.75rem 1.25rem;"><i class="fas fa-shield-alt mr-2"></i> Set up 2-step login</button>';
+}
+
+async function startTwoFactorSetup() {
+  const body = document.getElementById('admin-security-body');
+  try {
+    const data = await apiRequest('/auth/2fa/setup', { method: 'POST' });
+    body.innerHTML =
+      '<p style="font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>1.</strong> Install an authenticator app on your phone (Google Authenticator, Microsoft Authenticator or Aegis).</p>' +
+      '<p style="font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>2.</strong> In the app choose <em>Add account</em>, then <em>Enter a setup key</em>. Account name: StudyCore. Type: time-based. Key:</p>' +
+      '<div id="admin-2fa-secret" style="font-family: monospace; font-size: 1.1rem; letter-spacing: 0.08em; word-break: break-all; padding: 0.75rem; border-radius: 12px; background: var(--bg); border: 1px dashed var(--border); margin-bottom: 0.5rem;"></div>' +
+      '<p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem;">On the phone itself? <a id="admin-2fa-link" style="color: var(--ethGreen);">Tap here to open your authenticator app</a> and add the key automatically.</p>' +
+      '<p style="font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>3.</strong> Type the 6-digit code the app shows now:</p>' +
+      '<div class="form-group"><input type="text" id="admin-2fa-code" class="form-input" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456" style="max-width: 200px;"><div class="form-error" id="admin-2fa-error"></div></div>' +
+      '<button class="btn-primary" onclick="confirmTwoFactorSetup()" style="padding: 0.75rem 1.25rem;"><i class="fas fa-check mr-2"></i> Turn on</button>';
+    document.getElementById('admin-2fa-secret').textContent = data.secret.match(/.{1,4}/g).join(' ');
+    document.getElementById('admin-2fa-link').href = data.otpauthUrl;
+  } catch (err) {
+    showToast(err.message || 'Could not start the setup. Please try again.', 'error');
+  }
+}
+
+async function confirmTwoFactorSetup() {
+  const errorEl = document.getElementById('admin-2fa-error');
+  errorEl.classList.remove('show');
+  const code = document.getElementById('admin-2fa-code').value.trim();
+  try {
+    const data = await apiRequest('/auth/2fa/enable', { method: 'POST', body: { code } });
+    currentUser.twoFactorEnabled = true;
+    showBackupCodes(data.backupCodes);
+  } catch (err) {
+    errorEl.textContent = err.message || 'That code is not correct.';
+    errorEl.classList.add('show');
+  }
+}
+
+function showBackupCodes(codes) {
+  const body = document.getElementById('admin-security-body');
+  body.innerHTML =
+    '<p style="font-size: 0.875rem; color: var(--ethGreen); margin-bottom: 0.75rem;"><i class="fas fa-check-circle mr-2"></i><strong>2-step login is now ON.</strong></p>' +
+    '<p style="font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>Save these 8 backup codes now.</strong> Each works once, if you lose your phone. They are shown only this one time. Write them on paper or save them in a safe place.</p>' +
+    '<div id="admin-2fa-backup" style="font-family: monospace; font-size: 1rem; line-height: 1.9; padding: 0.75rem; border-radius: 12px; background: var(--bg); border: 1px dashed var(--border); margin-bottom: 0.75rem;"></div>' +
+    '<button class="btn-ghost" onclick="copyBackupCodes()" style="margin-right: 0.5rem;"><i class="fas fa-copy mr-2"></i> Copy</button>' +
+    '<button class="btn-primary" onclick="renderAdminSecurity()" style="padding: 0.75rem 1.25rem;">I saved them</button>';
+  document.getElementById('admin-2fa-backup').textContent = codes.join('\n');
+  document.getElementById('admin-2fa-backup').style.whiteSpace = 'pre-line';
+}
+
+function copyBackupCodes() {
+  const text = document.getElementById('admin-2fa-backup').textContent;
+  try {
+    navigator.clipboard.writeText(text).then(
+      () => showToast('Backup codes copied.', 'success'),
+      () => showToast('Could not copy. Please write them down.', 'warning')
+    );
+  } catch (e) { showToast('Could not copy. Please write them down.', 'warning'); }
 }
 
 function showForgotPasswordForm() {
@@ -1653,6 +1793,7 @@ function showDashboard() {
   if (currentUser.isAdmin) {
     renderAdminUsersList();
     renderAdminPaymentsList();
+    renderAdminSecurity();
   }
 
   // Start on the user's own semester (admins without one start on Semester 1)
