@@ -2874,6 +2874,33 @@ window.addEventListener('scroll', () => {
   }
   lastScroll = currentScroll;
 });
+// Shrinks a screenshot/photo before it is uploaded (smaller upload on mobile
+// data, and less of the free storage used). PDFs and small images are untouched.
+async function shrinkImageForUpload(file) {
+  const MAX_EDGE = 2400;        // typical phone screenshots are not resized, only re-compressed
+  const MIN_WORTH_SHRINKING = 300 * 1024;
+  if (!file.type || !file.type.startsWith('image/') || file.size <= MIN_WORTH_SHRINKING) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff'; // transparent PNGs become white, not black
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    if (bitmap.close) bitmap.close();
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+    if (!blob || blob.size >= file.size) return file; // never make it bigger
+    return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (e) {
+    return file; // any problem: just upload the original
+  }
+}
+
 async function handlePaymentSubmit(e) {
   e.preventDefault();
   if (!currentUser) {
@@ -2884,7 +2911,7 @@ async function handlePaymentSubmit(e) {
   const methodSelect = document.getElementById('pay-method');
   const method = methodSelect.value;
   const fileInput = document.getElementById('pay-screenshot');
-  const file = fileInput.files[0];
+  let file = fileInput.files[0];
 
   const transactionRef = document.getElementById('pay-ref').value.trim();
 
@@ -2897,6 +2924,8 @@ async function handlePaymentSubmit(e) {
   submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
 
   try {
+    file = await shrinkImageForUpload(file);
+
     // Step 1: ask the backend for a one-time signed upload URL.
     const uploadInfo = await apiRequest('/payments/upload-url', {
       method: 'POST',
