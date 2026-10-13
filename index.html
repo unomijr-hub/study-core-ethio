@@ -214,6 +214,23 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; visibility: hidden; transition: all 0.3s; }
 .modal-overlay.active { opacity: 1; visibility: visible; }
+/* PDF viewer: big on desktop, edge-to-edge on phones, optional full screen */
+#pdf-modal .pdf-modal-box { max-width: 1000px; width: 95vw; height: 92vh; max-height: 92vh; padding: 0; display: flex; flex-direction: column; overflow: hidden; }
+#pdf-modal .pdf-toolbar { padding: 0.5rem 0.75rem; margin: 0; gap: 0.5rem; flex-wrap: nowrap; flex-shrink: 0; }
+.pdf-controls { display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
+.pdf-page-indicator { font-size: 0.75rem; color: var(--muted); margin-right: 0.25rem; white-space: nowrap; }
+.pdf-btn { min-width: 40px; height: 40px; padding: 0 0.5rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); cursor: pointer; font-size: 0.875rem; font-weight: 600; }
+.pdf-btn:focus-visible, #pdf-modal .modal-close:focus-visible { outline: 2px solid var(--ethGreen); outline-offset: 2px; }
+.pdf-zoom-label { min-width: 56px; }
+#pdf-modal.pdf-full { padding: 0; }
+#pdf-modal.pdf-full .pdf-modal-box { width: 100vw; max-width: none; height: 100vh; height: 100dvh; max-height: none; border-radius: 0; border: none; }
+@media (max-width: 700px) {
+  #pdf-modal { padding: 0; }
+  #pdf-modal .pdf-modal-box { width: 100vw; max-width: none; height: 100vh; height: 100dvh; max-height: none; margin: 0; border-radius: 0; border: none; }
+  .pdf-page-indicator { display: none; }
+  .pdf-btn { min-width: 36px; padding: 0 0.375rem; }
+  .pdf-zoom-label { min-width: 48px; }
+}
 .modal { width: 100%; max-width: 480px; border-radius: 24px; background: var(--card); border: 1px solid var(--border); padding: 2rem; transform: scale(0.95); transition: transform 0.3s; max-height: 90vh; overflow-y: auto; }
 @media (max-width: 768px) {
   .modal { padding: 1.5rem; margin: 0 0.75rem; max-width: calc(100% - 1.5rem); border-radius: 20px; }
@@ -972,12 +989,19 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
 
 <!-- QUIZ TAKING MODAL -->
 <div id="pdf-modal" class="modal-overlay">
-  <div class="modal" style="max-width: 900px; width: 95vw; max-height: 92vh; display: flex; flex-direction: column;">
-    <div class="modal-header">
-      <div class="modal-title" id="pdf-modal-title"><i class="fas fa-file-pdf" style="margin-right: 0.5rem;"></i>Document</div>
-      <button class="modal-close" onclick="closePdfViewer()"><i class="fas fa-times"></i></button>
+  <div class="modal pdf-modal-box">
+    <div class="modal-header pdf-toolbar">
+      <div class="modal-title" id="pdf-modal-title" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><i class="fas fa-file-pdf" style="margin-right: 0.5rem;"></i>Document</div>
+      <div class="pdf-controls">
+        <span id="pdf-page-indicator" class="pdf-page-indicator"></span>
+        <button type="button" class="pdf-btn" onclick="pdfZoomBy(1 / PDF_ZOOM_STEP)" aria-label="Zoom out" title="Zoom out"><i class="fas fa-minus"></i></button>
+        <button type="button" class="pdf-btn pdf-zoom-label" id="pdf-zoom-label" onclick="pdfResetZoom()" aria-label="Fit to width" title="Fit to width">100%</button>
+        <button type="button" class="pdf-btn" onclick="pdfZoomBy(PDF_ZOOM_STEP)" aria-label="Zoom in" title="Zoom in"><i class="fas fa-plus"></i></button>
+        <button type="button" class="pdf-btn" id="pdf-fs-btn" onclick="togglePdfFullscreen()" aria-label="Full screen" title="Full screen"><i class="fas fa-expand"></i></button>
+        <button type="button" class="modal-close" onclick="closePdfViewer()" aria-label="Close"><i class="fas fa-times"></i></button>
+      </div>
     </div>
-    <div id="pdf-viewer-body" oncontextmenu="return false" style="position: relative; overflow-y: auto; flex: 1; user-select: none; -webkit-user-select: none; background: var(--bg); padding: 0.5rem;"></div>
+    <div id="pdf-viewer-body" oncontextmenu="return false" style="position: relative; overflow: auto; flex: 1; user-select: none; -webkit-user-select: none; background: var(--bg); padding: 0.25rem; touch-action: pan-x pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;"></div>
   </div>
 </div>
 
@@ -2167,8 +2191,267 @@ async function openCourseDetail(courseId) {
   }
 }
 
+// ===== PDF VIEWER =====
+// Pages are drawn only when they are near the screen (lazy), and are REDRAWN at
+// the new size whenever the student zooms or rotates the phone, so text stays
+// sharp instead of a small picture being stretched.
 let pdfObserver = null;
 let pdfDocument = null;
+let pdfEventsReady = false;
+let pdfPinch = null;
+const PDF_MIN_ZOOM = 0.5;
+const PDF_MAX_ZOOM = 4;
+const PDF_ZOOM_STEP = 1.25;
+const PDF_PAGE_GAP = 12; // px between pages
+const pdfView = { zoom: 1, baseWidth: 0, pageAspect: 1.414, numPages: 0, gen: 0, zoomTimer: null, resizeTimer: null, scrollQueued: false };
+
+function pdfClampZoom(z) {
+  return Math.min(PDF_MAX_ZOOM, Math.max(PDF_MIN_ZOOM, z));
+}
+
+// Canvas pixels per screen pixel: as sharp as the screen allows (up to 3x), but
+// never more than a phone can safely hold in memory for one page.
+function pdfOutputScale(cssWidth, cssHeight) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  const maxPixels = coarse ? 9000000 : 20000000;
+  const byMemory = Math.sqrt(maxPixels / Math.max(1, cssWidth * cssHeight));
+  return Math.max(1, Math.min(dpr, byMemory));
+}
+
+// Width of one page at "100%": the width of the viewer, up to 1000 px on big screens.
+function pdfFitWidth(body) {
+  return Math.max(200, Math.min(body.clientWidth - 12, 1000));
+}
+
+function pdfHolder() {
+  return document.getElementById('pdf-pages');
+}
+
+// Sizes every page box for the current zoom (the pictures inside stretch until redrawn).
+function pdfLayoutPages(body) {
+  const holder = pdfHolder();
+  if (!holder) return;
+  const cssWidth = Math.round(pdfView.baseWidth * pdfView.zoom);
+  const cssHeight = Math.round(cssWidth * pdfView.pageAspect);
+  holder.style.width = Math.max(body.clientWidth - 8, cssWidth) + 'px';
+  for (const wrap of holder.children) {
+    wrap.style.width = cssWidth + 'px';
+    wrap.style.height = cssHeight + 'px';
+    const mark = wrap.querySelector('[data-watermark]');
+    if (mark) mark.style.fontSize = Math.max(14, Math.round(cssWidth * 0.03)) + 'px';
+  }
+}
+
+async function pdfRenderPage(wrap, gen) {
+  if (!pdfDocument) return;
+  if (wrap.dataset.state === 'drawn' || wrap.dataset.state === 'drawing') return;
+  wrap.dataset.state = 'drawing';
+  try {
+    const page = await pdfDocument.getPage(Number(wrap.dataset.page));
+    if (gen !== pdfView.gen) { wrap.dataset.state = 'empty'; return; }
+    const cssWidth = parseFloat(wrap.style.width);
+    const cssHeight = parseFloat(wrap.style.height);
+    const scale = pdfOutputScale(cssWidth, cssHeight);
+    const unit = page.getViewport({ scale: 1 });
+    const viewport = page.getViewport({ scale: (cssWidth / unit.width) * scale });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    canvas.style.cssText = 'width:100%;height:auto;display:block;border-radius:6px;';
+    const task = page.render({ canvasContext: canvas.getContext('2d'), viewport });
+    wrap._task = task;
+    await task.promise;
+    wrap._task = null;
+    if (gen !== pdfView.gen || wrap.dataset.visible === '0' || !wrap.isConnected) {
+      canvas.width = 0; canvas.height = 0;
+      wrap.dataset.state = 'empty';
+      return;
+    }
+    wrap.insertBefore(canvas, wrap.firstChild);
+    wrap.dataset.state = 'drawn';
+  } catch (e) {
+    wrap._task = null;
+    wrap.dataset.state = 'empty';
+  }
+}
+
+function pdfClearPage(wrap) {
+  if (wrap._task) { try { wrap._task.cancel(); } catch (e) { /* ignore */ } wrap._task = null; }
+  const canvas = wrap.querySelector('canvas');
+  if (canvas) { canvas.width = 0; canvas.height = 0; canvas.remove(); }
+  wrap.dataset.state = 'empty';
+}
+
+// After a zoom/resize: throw away the old pictures and redraw the pages in view.
+function pdfRerenderVisible() {
+  const holder = pdfHolder();
+  if (!holder) return;
+  pdfView.gen += 1;
+  for (const wrap of holder.children) {
+    pdfClearPage(wrap);
+    if (wrap.dataset.visible === '1') pdfRenderPage(wrap, pdfView.gen);
+  }
+}
+
+function pdfUpdateZoomLabel() {
+  const label = document.getElementById('pdf-zoom-label');
+  if (label) label.textContent = Math.round(pdfView.zoom * 100) + '%';
+}
+
+function pdfUpdatePageIndicator() {
+  const holder = pdfHolder();
+  const body = document.getElementById('pdf-viewer-body');
+  const label = document.getElementById('pdf-page-indicator');
+  if (!holder || !body || !label || !pdfView.numPages) return;
+  const first = holder.children[0];
+  const second = holder.children[1];
+  const rowHeight = first ? (second ? second.offsetTop - first.offsetTop : first.offsetHeight + PDF_PAGE_GAP) : 1;
+  const index = Math.floor((body.scrollTop + body.clientHeight * 0.4) / Math.max(1, rowHeight)) + 1;
+  label.textContent = Math.min(pdfView.numPages, Math.max(1, index)) + ' / ' + pdfView.numPages;
+}
+
+// Zoom around a point (default: the middle of the screen) so the text you are
+// looking at stays where it is.
+function pdfSetZoom(newZoom, focus) {
+  const body = document.getElementById('pdf-viewer-body');
+  if (!body || !pdfDocument) return;
+  const zoom = pdfClampZoom(newZoom);
+  if (Math.abs(zoom - pdfView.zoom) < 0.001) return;
+  const factor = zoom / pdfView.zoom;
+  const fx = focus ? focus.x : body.clientWidth / 2;
+  const fy = focus ? focus.y : body.clientHeight / 2;
+  const contentX = body.scrollLeft + fx;
+  const contentY = body.scrollTop + fy;
+  pdfView.zoom = zoom;
+  pdfLayoutPages(body);
+  body.scrollLeft = contentX * factor - fx;
+  body.scrollTop = contentY * factor - fy;
+  pdfUpdateZoomLabel();
+  pdfUpdatePageIndicator();
+  clearTimeout(pdfView.zoomTimer);
+  pdfView.zoomTimer = setTimeout(pdfRerenderVisible, 150);
+}
+
+function pdfZoomBy(factor) {
+  pdfSetZoom(pdfView.zoom * factor);
+}
+
+function pdfResetZoom() {
+  pdfSetZoom(1);
+  const body = document.getElementById('pdf-viewer-body');
+  if (body) body.scrollLeft = 0;
+}
+
+// Screen size changed (rotation, resize, full screen): recompute the page width.
+function pdfRelayout() {
+  const body = document.getElementById('pdf-viewer-body');
+  if (!pdfDocument || !body || !pdfHolder()) return;
+  const newBase = pdfFitWidth(body);
+  if (Math.abs(newBase - pdfView.baseWidth) < 2) return;
+  const ratio = body.scrollHeight > 0 ? body.scrollTop / body.scrollHeight : 0;
+  pdfView.baseWidth = newBase;
+  pdfLayoutPages(body);
+  body.scrollTop = ratio * body.scrollHeight;
+  pdfRerenderVisible();
+  pdfUpdatePageIndicator();
+}
+
+function pdfSetFullscreenIcon(on) {
+  const btn = document.getElementById('pdf-fs-btn');
+  if (!btn) return;
+  btn.innerHTML = on ? '<i class="fas fa-compress"></i>' : '<i class="fas fa-expand"></i>';
+  btn.setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen');
+  btn.title = on ? 'Exit full screen' : 'Full screen';
+}
+
+function togglePdfFullscreen() {
+  const overlay = document.getElementById('pdf-modal');
+  const on = !overlay.classList.contains('pdf-full');
+  overlay.classList.toggle('pdf-full', on);
+  pdfSetFullscreenIcon(on);
+  // Also hide the browser's own bars where the browser allows it (not on iPhone).
+  try {
+    if (on && overlay.requestFullscreen && !document.fullscreenElement) overlay.requestFullscreen().catch(() => {});
+    if (!on && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  } catch (e) { /* ignore */ }
+  setTimeout(pdfRelayout, 200);
+}
+
+// Two-finger pinch: smooth preview while the fingers move, sharp redraw when they lift.
+function initPdfViewerEvents() {
+  if (pdfEventsReady) return;
+  pdfEventsReady = true;
+  const body = document.getElementById('pdf-viewer-body');
+
+  body.addEventListener('scroll', () => {
+    if (pdfView.scrollQueued) return;
+    pdfView.scrollQueued = true;
+    requestAnimationFrame(() => { pdfView.scrollQueued = false; pdfUpdatePageIndicator(); });
+  }, { passive: true });
+
+  body.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 2 || !pdfDocument) return;
+    const [a, b] = e.touches;
+    const rect = body.getBoundingClientRect();
+    pdfPinch = {
+      distance: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) || 1,
+      startZoom: pdfView.zoom,
+      zoom: pdfView.zoom,
+      x: (a.clientX + b.clientX) / 2 - rect.left,
+      y: (a.clientY + b.clientY) / 2 - rect.top
+    };
+  }, { passive: true });
+
+  body.addEventListener('touchmove', (e) => {
+    if (!pdfPinch || e.touches.length !== 2) return;
+    e.preventDefault();
+    const [a, b] = e.touches;
+    const distance = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) || 1;
+    pdfPinch.zoom = pdfClampZoom(pdfPinch.startZoom * (distance / pdfPinch.distance));
+    const holder = pdfHolder();
+    if (holder) {
+      holder.style.transformOrigin = (body.scrollLeft + pdfPinch.x) + 'px ' + (body.scrollTop + pdfPinch.y) + 'px';
+      holder.style.transform = 'scale(' + (pdfPinch.zoom / pdfView.zoom) + ')';
+    }
+  }, { passive: false });
+
+  const endPinch = (e) => {
+    if (!pdfPinch || e.touches.length >= 2) return;
+    const finished = pdfPinch;
+    pdfPinch = null;
+    const holder = pdfHolder();
+    if (holder) { holder.style.transform = ''; holder.style.transformOrigin = ''; }
+    pdfSetZoom(finished.zoom, { x: finished.x, y: finished.y });
+  };
+  body.addEventListener('touchend', endPinch, { passive: true });
+  body.addEventListener('touchcancel', endPinch, { passive: true });
+
+  // Safari on iPhone would otherwise zoom the whole page on pinch.
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach((name) => {
+    body.addEventListener(name, (e) => e.preventDefault());
+  });
+
+  window.addEventListener('resize', () => {
+    clearTimeout(pdfView.resizeTimer);
+    pdfView.resizeTimer = setTimeout(pdfRelayout, 200);
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+      document.getElementById('pdf-modal').classList.remove('pdf-full');
+      pdfSetFullscreenIcon(false);
+    }
+    setTimeout(pdfRelayout, 200);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!pdfDocument || !document.getElementById('pdf-modal').classList.contains('active')) return;
+    if (e.key === '+' || e.key === '=') { e.preventDefault(); pdfZoomBy(PDF_ZOOM_STEP); }
+    else if (e.key === '-' || e.key === '_') { e.preventDefault(); pdfZoomBy(1 / PDF_ZOOM_STEP); }
+    else if (e.key === '0') { e.preventDefault(); pdfResetZoom(); }
+  });
+}
 
 async function downloadCourseFile(courseId, fileId, title) {
   const body = document.getElementById('pdf-viewer-body');
@@ -2176,6 +2459,11 @@ async function downloadCourseFile(courseId, fileId, title) {
   body.innerHTML = '<p style="text-align:center;padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
   openModal('pdf-modal');
   teardownPdfViewer();
+  initPdfViewerEvents();
+  // The full-screen button does nothing on iPhone (no browser support), and
+  // phones are already edge to edge, so hide it there.
+  const fsBtn = document.getElementById('pdf-fs-btn');
+  if (fsBtn) fsBtn.style.display = (!document.getElementById('pdf-modal').requestFullscreen && window.innerWidth <= 700) ? 'none' : '';
   try {
     if (!window.pdfjsLib) throw new Error('The PDF viewer could not load. Check your connection and try again.');
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -2187,62 +2475,47 @@ async function downloadCourseFile(courseId, fileId, title) {
     body.innerHTML = '';
 
     const mark = currentUser ? currentUser.email : '';
-    const width = Math.min(body.clientWidth - 16, 860);
-    const dpr = Math.min(window.devicePixelRatio || 1, 2); // sharper than 2x only wastes memory
     const first = await pdf.getPage(1);
-    const base = first.getViewport({ scale: 1 });
-    const pageHeight = Math.round(width * (base.height / base.width));
+    const unit = first.getViewport({ scale: 1 });
+    pdfView.zoom = 1;
+    pdfView.numPages = pdf.numPages;
+    pdfView.pageAspect = unit.height / unit.width;
+    pdfView.baseWidth = pdfFitWidth(body);
+    pdfView.gen += 1;
+    pdfSetFullscreenIcon(document.getElementById('pdf-modal').classList.contains('pdf-full'));
 
-    // One empty, correctly sized box per page. Pages are drawn only when they
-    // come near the screen and are cleared again when they scroll far away, so
-    // a 100-page file never needs 100 canvases in memory at once.
-    const renderPage = async (wrap) => {
-      const n = Number(wrap.dataset.page);
-      if (wrap.dataset.state === 'drawn' || wrap.dataset.state === 'drawing') return;
-      wrap.dataset.state = 'drawing';
-      try {
-        const page = await pdf.getPage(n);
-        const vp = page.getViewport({ scale: (width / page.getViewport({ scale: 1 }).width) * dpr });
-        const canvas = document.createElement('canvas');
-        canvas.width = vp.width; canvas.height = vp.height;
-        canvas.style.cssText = 'width:100%;height:auto;display:block;border-radius:6px;';
-        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-        if (wrap.dataset.visible === '0' || !wrap.isConnected) { wrap.dataset.state = 'empty'; return; }
-        wrap.insertBefore(canvas, wrap.firstChild);
-        wrap.dataset.state = 'drawn';
-      } catch (e) {
-        wrap.dataset.state = 'empty';
-      }
-    };
+    const holder = document.createElement('div');
+    holder.id = 'pdf-pages';
+    holder.style.cssText = 'margin:0 auto;';
+    body.appendChild(holder);
 
     pdfObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         const wrap = entry.target;
         wrap.dataset.visible = entry.isIntersecting ? '1' : '0';
-        if (entry.isIntersecting) {
-          renderPage(wrap);
-        } else if (wrap.dataset.state === 'drawn') {
-          const canvas = wrap.querySelector('canvas');
-          if (canvas) { canvas.width = 0; canvas.height = 0; canvas.remove(); }
-          wrap.dataset.state = 'empty';
-        }
+        if (entry.isIntersecting) pdfRenderPage(wrap, pdfView.gen);
+        else if (wrap.dataset.state === 'drawn' || wrap.dataset.state === 'drawing') pdfClearPage(wrap);
       });
-    }, { root: body, rootMargin: '700px 0px' });
+    }, { root: body, rootMargin: '600px 0px' });
 
     for (let n = 1; n <= pdf.numPages; n++) {
       const wrap = document.createElement('div');
       wrap.dataset.page = String(n);
       wrap.dataset.state = 'empty';
       wrap.dataset.visible = '0';
-      wrap.style.cssText = `position:relative;margin:0 auto 0.75rem;width:${width}px;height:${pageHeight}px;background:rgba(127,127,127,0.08);border-radius:6px;`;
+      wrap.style.cssText = `position:relative;margin:0 auto ${PDF_PAGE_GAP}px;background:rgba(127,127,127,0.08);border-radius:6px;`;
       // Watermark with the viewer's email on every page (discourages sharing).
       const wm = document.createElement('div');
+      wm.setAttribute('data-watermark', '1');
       wm.textContent = mark;
-      wm.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:1.6rem;font-weight:700;color:rgba(120,120,120,0.22);transform:rotate(-30deg);white-space:nowrap;overflow:hidden;z-index:2;';
+      wm.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-weight:700;color:rgba(120,120,120,0.22);transform:rotate(-30deg);white-space:nowrap;overflow:hidden;z-index:2;';
       wrap.appendChild(wm);
-      body.appendChild(wrap);
+      holder.appendChild(wrap);
       pdfObserver.observe(wrap);
     }
+    pdfLayoutPages(body);
+    pdfUpdateZoomLabel();
+    pdfUpdatePageIndicator();
   } catch (err) {
     body.innerHTML = '';
     const p = document.createElement('p');
@@ -2254,13 +2527,24 @@ async function downloadCourseFile(courseId, fileId, title) {
 
 // Stop drawing and release the PDF's memory.
 function teardownPdfViewer() {
+  clearTimeout(pdfView.zoomTimer);
+  pdfView.gen += 1;
+  pdfPinch = null;
   if (pdfObserver) { pdfObserver.disconnect(); pdfObserver = null; }
+  const holder = pdfHolder();
+  if (holder) for (const wrap of holder.children) pdfClearPage(wrap);
   if (pdfDocument) { try { pdfDocument.destroy(); } catch (e) { /* ignore */ } pdfDocument = null; }
+  pdfView.numPages = 0;
 }
 
 function closePdfViewer() {
   teardownPdfViewer();
   document.getElementById('pdf-viewer-body').innerHTML = '';
+  document.getElementById('pdf-page-indicator').textContent = '';
+  const overlay = document.getElementById('pdf-modal');
+  if (document.fullscreenElement && document.exitFullscreen) { try { document.exitFullscreen().catch(() => {}); } catch (e) { /* ignore */ } }
+  overlay.classList.remove('pdf-full');
+  pdfSetFullscreenIcon(false);
   closeModal('pdf-modal');
 }
 
