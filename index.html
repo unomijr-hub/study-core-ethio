@@ -2249,7 +2249,7 @@ async function pdfRenderPage(wrap, gen) {
   wrap.dataset.state = 'drawing';
   try {
     const page = await pdfDocument.getPage(Number(wrap.dataset.page));
-    if (gen !== pdfView.gen) { wrap.dataset.state = 'empty'; return; }
+    if (gen !== pdfView.gen) return; // a newer zoom/resize took over this page
     const cssWidth = parseFloat(wrap.style.width);
     const cssHeight = parseFloat(wrap.style.height);
     const scale = pdfOutputScale(cssWidth, cssHeight);
@@ -2263,34 +2263,43 @@ async function pdfRenderPage(wrap, gen) {
     wrap._task = task;
     await task.promise;
     wrap._task = null;
-    if (gen !== pdfView.gen || wrap.dataset.visible === '0' || !wrap.isConnected) {
+    if (gen !== pdfView.gen) { canvas.width = 0; canvas.height = 0; return; }
+    if (wrap.dataset.visible === '0' || !wrap.isConnected) {
       canvas.width = 0; canvas.height = 0;
       wrap.dataset.state = 'empty';
       return;
     }
+    // Swap in the sharp picture only now, so the page is never blank in between.
+    wrap.querySelectorAll('canvas').forEach((old) => { old.width = 0; old.height = 0; old.remove(); });
     wrap.insertBefore(canvas, wrap.firstChild);
     wrap.dataset.state = 'drawn';
   } catch (e) {
     wrap._task = null;
-    wrap.dataset.state = 'empty';
+    if (gen === pdfView.gen) wrap.dataset.state = 'empty';
   }
 }
 
 function pdfClearPage(wrap) {
   if (wrap._task) { try { wrap._task.cancel(); } catch (e) { /* ignore */ } wrap._task = null; }
-  const canvas = wrap.querySelector('canvas');
-  if (canvas) { canvas.width = 0; canvas.height = 0; canvas.remove(); }
+  wrap.querySelectorAll('canvas').forEach((canvas) => { canvas.width = 0; canvas.height = 0; canvas.remove(); });
   wrap.dataset.state = 'empty';
 }
 
-// After a zoom/resize: throw away the old pictures and redraw the pages in view.
+// After a zoom/resize: redraw the pages in view at the new size. The old
+// picture stays on screen (stretched) until the sharp one is ready, so there is
+// no blank flash; pages far from the screen are freed.
 function pdfRerenderVisible() {
   const holder = pdfHolder();
   if (!holder) return;
   pdfView.gen += 1;
   for (const wrap of holder.children) {
-    pdfClearPage(wrap);
-    if (wrap.dataset.visible === '1') pdfRenderPage(wrap, pdfView.gen);
+    if (wrap._task) { try { wrap._task.cancel(); } catch (e) { /* ignore */ } wrap._task = null; }
+    if (wrap.dataset.visible === '1') {
+      wrap.dataset.state = 'empty';
+      pdfRenderPage(wrap, pdfView.gen);
+    } else {
+      pdfClearPage(wrap);
+    }
   }
 }
 
@@ -2494,7 +2503,7 @@ async function downloadCourseFile(courseId, fileId, title) {
         const wrap = entry.target;
         wrap.dataset.visible = entry.isIntersecting ? '1' : '0';
         if (entry.isIntersecting) pdfRenderPage(wrap, pdfView.gen);
-        else if (wrap.dataset.state === 'drawn' || wrap.dataset.state === 'drawing') pdfClearPage(wrap);
+        else pdfClearPage(wrap);
       });
     }, { root: body, rootMargin: '600px 0px' });
 
