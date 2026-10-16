@@ -691,7 +691,7 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
       </div>
 
       <div style="padding: 1.5rem; border-radius: 20px; background: var(--card); border: 1px solid var(--border); margin-bottom: 1.5rem;">
-        <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-crown" style="color: var(--ethYellow); margin-right: 0.5rem;"></i>Payments</h3>
+        <h3 style="font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-crown" style="color: var(--ethYellow); margin-right: 0.5rem;"></i>Payments <span id="admin-pending-count" style="margin-left: 0.5rem; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(127,127,127,0.12); color: var(--fg); vertical-align: middle;">... pending</span></h3>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
           <button id="admin-pay-tab-pending" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8125rem;" onclick="adminPaymentsSetStatus('pending')">Pending</button>
           <button id="admin-pay-tab-approved" class="btn-ghost" style="padding: 0.5rem 1rem; font-size: 0.8125rem;" onclick="adminPaymentsSetStatus('approved')">Approved</button>
@@ -3401,9 +3401,25 @@ async function adminPaymentsExport() {
   }
 }
 
+// "N pending" next to the Payments heading: always the total waiting, whatever
+// tab or filters are showing below.
+async function adminPaymentsRefreshPendingCount() {
+  const badge = document.getElementById('admin-pending-count');
+  if (!badge) return;
+  try {
+    const data = await apiRequest('/admin/payments?status=pending&page=1&pageSize=1');
+    const n = data.meta.total;
+    badge.textContent = n + ' pending';
+    badge.style.background = n > 0 ? 'rgba(252,221,9,0.30)' : 'rgba(127,127,127,0.12)';
+  } catch (err) {
+    /* keep the previous number; the list below shows any real error */
+  }
+}
+
 async function renderAdminPaymentsList() {
   const container = document.getElementById('admin-payments-list');
   if (!container) return;
+  adminPaymentsRefreshPendingCount();
   const status = adminPaymentsState.status;
   adminPaymentsState.selected.clear();
   adminPaymentsPageIds = [];
