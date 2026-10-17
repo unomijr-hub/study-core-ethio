@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StudyCore — Cheat Sheets, Summaries & Notes for Ethiopian Students</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -438,7 +438,7 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
 .w-full { width: 100%; }
 .text-center { text-align: center; }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="vendor/pdfjs/pdf.min.js"></script>
 </head>
 <body class="auth-pending">
 <div id="load-bar"></div>
@@ -2475,11 +2475,11 @@ async function downloadCourseFile(courseId, fileId, title) {
   if (fsBtn) fsBtn.style.display = (!document.getElementById('pdf-modal').requestFullscreen && window.innerWidth <= 700) ? 'none' : '';
   try {
     if (!window.pdfjsLib) throw new Error('The PDF viewer could not load. Check your connection and try again.');
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdfjs/pdf.worker.min.js';
     const data = await apiRequest(`/courses/${courseId}/files/${fileId}/download-url`);
     const url = safeHttpUrl(data.downloadUrl);
     if (!url) throw new Error('This file has an invalid link.');
-    const pdf = await pdfjsLib.getDocument({ url }).promise;
+    const pdf = await pdfjsLib.getDocument({ url, isEvalSupported: false }).promise;
     pdfDocument = pdf;
     body.innerHTML = '';
 
