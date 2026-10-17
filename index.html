@@ -438,7 +438,6 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
 .w-full { width: 100%; }
 .text-center { text-align: center; }
 </style>
-<script src="vendor/pdfjs/pdf.min.js"></script>
 </head>
 <body class="auth-pending">
 <div id="load-bar"></div>
@@ -1137,6 +1136,28 @@ let pendingRegistration = null;
 // IMPORTANT: replace this with YOUR backend's address (from Render) once the
 // backend is deployed, e.g. 'https://studycore-api.onrender.com/api/v1'.
 const API_BASE = '/api/v1'; // same-site: Render rewrites /api/* to the backend
+
+// pdf.js is large, so it is NOT loaded with the page (that made every page open slower).
+// It loads quietly in the background a moment after the page is ready, and on demand
+// the first time a PDF is opened if that has not finished yet.
+let pdfJsPromise = null;
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve();
+  if (pdfJsPromise) return pdfJsPromise;
+  pdfJsPromise = new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = 'vendor/pdfjs/pdf.min.js';
+    el.onload = () => resolve();
+    el.onerror = () => {
+      pdfJsPromise = null; // allow a retry on the next try
+      el.remove();
+      reject(new Error('The PDF viewer could not load. Check your connection and try again.'));
+    };
+    document.head.appendChild(el);
+  });
+  return pdfJsPromise;
+}
+window.addEventListener('load', () => { setTimeout(() => { loadPdfJs().catch(() => {}); }, 1500); });
 let accessToken = null;
 
 // Remember which button/tab/card the person just pressed, so the spinner
@@ -2474,7 +2495,7 @@ async function downloadCourseFile(courseId, fileId, title) {
   const fsBtn = document.getElementById('pdf-fs-btn');
   if (fsBtn) fsBtn.style.display = (!document.getElementById('pdf-modal').requestFullscreen && window.innerWidth <= 700) ? 'none' : '';
   try {
-    if (!window.pdfjsLib) throw new Error('The PDF viewer could not load. Check your connection and try again.');
+    await loadPdfJs();
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdfjs/pdf.worker.min.js';
     const data = await apiRequest(`/courses/${courseId}/files/${fileId}/download-url`);
     const url = safeHttpUrl(data.downloadUrl);
