@@ -516,7 +516,7 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
         <div class="hero-float-card hero-float-card-2">
           <div style="display: flex; align-items: center; gap: 0.75rem;">
             <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(252,221,9,0.15); display: flex; align-items: center; justify-content: center; color: var(--ethYellow);"><i class="fas fa-trophy"></i></div>
-            <div><div style="font-weight: 700; font-size: 0.875rem;">Quizzes</div><div style="font-size: 0.75rem; color: var(--muted);">Instant results</div></div>
+            <div><div style="font-weight: 700; font-size: 0.875rem;">Detailed Notes</div><div style="font-size: 0.75rem; color: var(--muted);">Every topic explained</div></div>
           </div>
         </div>
         <div class="hero-float-card hero-float-card-3">
@@ -925,7 +925,6 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
       <div style="display: flex; flex-direction: column; gap: 0.5rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Both semesters (1 and 2)</div>
         <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Cheat sheet, summary and detailed explanation for every course</div>
-        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Practice quizzes with instant results</div>
         <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Progress tracking</div>
       </div>
     </div>
@@ -1070,7 +1069,7 @@ Answer: B"></textarea>
       <button class="btn-icon" style="width: 32px; height: 32px;" onclick="toggleChat()"><i class="fas fa-times"></i></button>
     </div>
     <div class="chat-messages" id="chat-messages">
-      <div class="chat-bubble chat-bubble-ai">Hi! I'm the StudyCore helper. Ask me about courses, materials, quizzes or payment.</div>
+      <div class="chat-bubble chat-bubble-ai">Hi! I'm the StudyCore helper. Ask me about courses, materials or payment.</div>
     </div>
     <div class="chat-input-area">
       <input type="text" class="chat-input" id="chat-input" placeholder="Type your question..." onkeypress="if(event.key==='Enter')sendChat()">
@@ -1113,9 +1112,9 @@ const MATERIAL_SLOTS = [
 
 const chatResponses = {
   "course": "StudyCore has two streams, Social Science and Natural Science, with two semesters each. Every course has a cheat sheet, a summary and a detailed explanation. Log in and open your stream from the dashboard to see them.",
-  "exam": "Each course can have practice quizzes. You answer all the questions, submit once, and see your score and which answers were right or wrong straight away. Passing a quiz marks that course as completed.",
+  "exam": "StudyCore gives you study materials: every course has a cheat sheet, a summary and a detailed explanation to revise from.",
   "pay": "Premium costs 100 ETB, paid once. Open the Pay Now button in your dashboard, send the money by Telebirr or CBE, then upload a screenshot of the payment. We activate your account after checking it.",
-  "default": "I can answer questions about courses, quizzes and payment. Try asking about 'courses', 'quizzes' or 'payment'."
+  "default": "I can answer questions about courses, materials and payment. Try asking about 'courses' or 'payment'."
 };
 
 // ===== STATE =====
