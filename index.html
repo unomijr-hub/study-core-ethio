@@ -930,17 +930,9 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
     </div>
 
     <div style="padding: 1rem; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); margin-bottom: 1.5rem;">
-      <p style="font-size: 0.75rem; font-weight: 700; color: var(--fg); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>Payment Methods</p>
+      <p style="font-size: 0.75rem; font-weight: 700; color: var(--fg); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fas fa-university" style="margin-right: 0.5rem;"></i>Pay by CBE bank transfer</p>
 
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 10px; background: var(--card); border: 1px solid var(--border);">
-          <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(7,137,48,0.15); display: flex; align-items: center; justify-content: center; color: var(--ethGreen); font-size: 1rem;"><i class="fas fa-mobile-alt"></i></div>
-          <div style="flex: 1;">
-            <p style="font-weight: 700; font-size: 0.875rem; color: var(--fg);">Telebirr</p>
-            <p style="font-size: 0.75rem; color: var(--muted);">Send 100 ETB to: <strong style="color: var(--fg);">0966211851</strong> | Name: Abenezer Girma</p>
-          </div>
-        </div>
-
         <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 10px; background: var(--card); border: 1px solid var(--border);">
           <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(59,130,246,0.15); display: flex; align-items: center; justify-content: center; color: #3B82F6; font-size: 1rem;"><i class="fas fa-university"></i></div>
           <div style="flex: 1;">
@@ -952,19 +944,16 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
     </div>
 
     <form onsubmit="handlePaymentSubmit(event)">
-      <div class="form-group">
-        <label class="form-label"><i class="fas fa-receipt" style="margin-right: 0.25rem;"></i>Payment Method Used</label>
+      <div class="form-group" style="display: none;">
         <select id="pay-method" class="form-select" required>
-          <option value="">Select method...</option>
-          <option value="telebirr">Telebirr</option>
-          <option value="bank_transfer">Commercial Bank of Ethiopia (CBE)</option>
+          <option value="bank_transfer" selected>Commercial Bank of Ethiopia (CBE)</option>
         </select>
       </div>
 
       <div class="form-group">
         <label class="form-label"><i class="fas fa-receipt" style="margin-right: 0.25rem;"></i>Transaction / Receipt Number</label>
         <input type="text" id="pay-ref" class="form-input" placeholder="e.g. FT26281ABCDE" maxlength="40" autocomplete="off" required>
-        <p style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;">Find it on your Telebirr or CBE receipt (it is printed as the transaction or reference number)</p>
+        <p style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;">Find it on your CBE receipt (it is printed as the transaction or reference number)</p>
       </div>
 
       <div class="form-group">
@@ -1113,7 +1102,7 @@ const MATERIAL_SLOTS = [
 const chatResponses = {
   "course": "StudyCore has two streams, Social Science and Natural Science, with two semesters each. Every course has a cheat sheet, a summary and a detailed explanation. Log in and open your stream from the dashboard to see them.",
   "exam": "StudyCore gives you study materials: every course has a cheat sheet, a summary and a detailed explanation to revise from.",
-  "pay": "Premium costs 100 ETB, paid once. Open the Pay Now button in your dashboard, send the money by Telebirr or CBE, then upload a screenshot of the payment. We activate your account after checking it.",
+  "pay": "Premium costs 100 ETB, paid once. Open the Pay Now button in your dashboard, send the money by CBE bank transfer to the account shown, then upload a screenshot of the payment. We activate your account after checking it.",
   "default": "I can answer questions about courses, materials and payment. Try asking about 'courses' or 'payment'."
 };
 
@@ -3377,7 +3366,7 @@ async function adminPaymentsBulk(action) {
 
   let reason = '';
   if (action === 'approve') {
-    if (!confirm('Approve ' + ids.length + ' payment(s) and grant premium access?\n\nOnly continue if you have checked each receipt number against your Telebirr / CBE records.')) return;
+    if (!confirm('Approve ' + ids.length + ' payment(s) and grant premium access?\n\nOnly continue if you have checked each receipt number against your CBE records.')) return;
   } else {
     reason = (prompt('Reason for rejecting ' + ids.length + ' payment(s) (shown to the students):') || '').trim();
     if (reason.length < 3) { showToast('A rejection reason of at least 3 characters is required.', 'warning'); return; }
