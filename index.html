@@ -595,7 +595,7 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
     </nav>
     <div id="sidebar-upgrade" style="padding: 1rem; margin: 1rem 0; border-radius: 16px; background: linear-gradient(135deg, rgba(7,137,48,0.15), rgba(29,185,84,0.05)); border: 1px solid rgba(7,137,48,0.3); text-align: center;">
       <p style="font-size: 0.75rem; color: var(--ethGreen); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fas fa-crown" style="margin-right: 0.25rem;"></i>Upgrade</p>
-      <p style="font-size: 0.875rem; color: var(--fg); font-weight: 600; margin-bottom: 0.75rem;">Unlock all materials for 100 ETB</p>
+      <p style="font-size: 0.875rem; color: var(--fg); font-weight: 600; margin-bottom: 0.75rem;">One payment of <span class="js-price">200</span> ETB unlocks every course</p>
       <button class="btn-primary w-full" onclick="openPremiumModal()" style="padding: 0.625rem; font-size: 0.875rem;"><i class="fas fa-unlock mr-2"></i> Pay Now</button>
     </div>
     <div style="padding-top: 1rem;">
@@ -658,6 +658,12 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
       <div class="year-tabs" id="year-tabs">
         <button class="year-tab active" onclick="switchYearTab(1)" data-year="1">Semester 1</button>
         <button class="year-tab" onclick="switchYearTab(2)" data-year="2">Semester 2</button>
+      </div>
+
+      <!-- One-payment notice (shown only to students who have not paid yet) -->
+      <div id="dash-unlock-note" class="hidden" style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: space-between; padding: 0.875rem 1rem; margin-bottom: 1rem; border-radius: 14px; background: linear-gradient(135deg, rgba(7,137,48,0.15), rgba(29,185,84,0.05)); border: 1px solid rgba(7,137,48,0.3);">
+        <p style="font-size: 0.875rem; color: var(--fg); font-weight: 600; margin: 0;"><i class="fas fa-unlock" style="color: var(--ethGreen); margin-right: 0.5rem;"></i>Pay <span class="js-price">200</span> ETB once to unlock all courses in both semesters. You do not pay per course.</p>
+        <button class="btn-primary" onclick="openPremiumModal()" style="padding: 0.5rem 1rem; font-size: 0.8125rem;"><i class="fas fa-unlock mr-2"></i> Pay Now</button>
       </div>
 
       <!-- Course Grid -->
@@ -918,12 +924,12 @@ body.auth-pending #nav-login-btn, body.auth-pending #nav-register-btn { visibili
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
         <div>
           <p style="font-size: 0.75rem; color: var(--ethGreen); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Premium Plan</p>
-          <p style="font-size: 2rem; font-weight: 900; color: var(--fg);">100 <span style="font-size: 1rem; color: var(--muted);">ETB</span></p>
+          <p style="font-size: 2rem; font-weight: 900; color: var(--fg);"><span class="js-price">200</span> <span style="font-size: 1rem; color: var(--muted);">ETB</span></p>
         </div>
         <div style="padding: 0.5rem 1rem; border-radius: 999px; background: rgba(7,137,48,0.15); color: var(--ethGreen); font-size: 0.75rem; font-weight: 700;">One-Time</div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Both semesters (1 and 2)</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> All courses, both semesters: one payment, no per-course fees</div>
         <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Cheat sheet, summary and detailed explanation for every course</div>
         <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--fg);"><i class="fas fa-check" style="color: var(--ethGreen);"></i> Progress tracking</div>
       </div>
@@ -1076,7 +1082,25 @@ const departments = [
   { name: "Natural Science", icon: "fa-flask", color: "#1DB954", college: "Natural Science" }
 ];
 
-const PREMIUM_PRICE_ETB = 100;
+let PREMIUM_PRICE_ETB = 200; // fallback only: the real price comes from the server (loadPublicPrice below)
+function applyPrice() {
+  document.querySelectorAll('.js-price').forEach((el) => { el.textContent = String(PREMIUM_PRICE_ETB); });
+}
+// The price is one setting on the server (premium_price_etb). Reading it here means a price
+// change in the Admin tab shows up everywhere without editing this file.
+async function loadPublicPrice() {
+  try {
+    const data = await apiRequestRaw('/settings/public', { auth: false });
+    // Accept the shapes the endpoint could return: a list, {settings:[...]}, or a key->value map.
+    const list = Array.isArray(data) ? data : (data && Array.isArray(data.settings) ? data.settings : null);
+    let raw;
+    if (list) { const item = list.find((x) => x && x.key === 'premium_price_etb'); raw = item ? item.value : undefined; }
+    else if (data) { const m = data.settings || data; raw = m.premium_price_etb; }
+    const price = Number(raw);
+    if (Number.isFinite(price) && price > 0) PREMIUM_PRICE_ETB = price;
+  } catch (e) { /* keep the fallback */ }
+  applyPrice();
+}
 
 // Course catalogue used for the course counts and the search box. Keep this
 // in sync with COURSES in the backend's prisma/seed.js. Courses an admin adds
@@ -1102,7 +1126,7 @@ const MATERIAL_SLOTS = [
 const chatResponses = {
   "course": "StudyCore has two streams, Social Science and Natural Science, with two semesters each. Every course has a cheat sheet, a summary and a detailed explanation. Log in and open your stream from the dashboard to see them.",
   "exam": "StudyCore gives you study materials: every course has a cheat sheet, a summary and a detailed explanation to revise from.",
-  "pay": "Premium costs 100 ETB, paid once. Open the Pay Now button in your dashboard, send the money by CBE bank transfer to the account shown, then upload a screenshot of the payment. We activate your account after checking it.",
+  "pay": "Premium costs {PRICE} ETB, paid once, and unlocks every course (no per-course fees). Open the Pay Now button in your dashboard, send the money by CBE bank transfer to the account shown, then upload a screenshot of the payment. We activate your account after checking it.",
   "default": "I can answer questions about courses, materials and payment. Try asking about 'courses' or 'payment'."
 };
 
@@ -1294,6 +1318,7 @@ function safeParse(raw, fallback) {
 }
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
+  loadPublicPrice();
   restoreSession().finally(() => { document.body.classList.remove('auth-pending'); lastAccountRefresh = 0; refreshAccountState(); });
   setTimeout(() => document.body.classList.remove('auth-pending'), 8000);
   renderDepartments();
@@ -1972,6 +1997,8 @@ async function renderDashboardCourses() {
   const empty = document.getElementById('course-empty');
   const isPaid = currentUser && currentUser.isPaid;
   const canAccess = currentUser && (currentUser.isAdmin || currentUser.isPaid);
+  const unlockNote = document.getElementById('dash-unlock-note');
+  if (unlockNote) { unlockNote.classList.toggle('hidden', !!canAccess); applyPrice(); }
 
   const viewDept = currentViewDept || currentUser.dept;
   const deptId = await getDepartmentId(viewDept);
@@ -2009,8 +2036,8 @@ async function renderDashboardCourses() {
         <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--ethGreen), var(--ethAccent)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; margin-bottom: 1rem; box-shadow: 0 8px 30px rgba(7,137,48,0.4);">
           <i class="fas fa-lock"></i>
         </div>
-        <p style="font-weight: 700; font-size: 1rem; color: var(--fg); margin-bottom: 0.25rem;">Premium Content</p>
-        <p style="font-size: 0.75rem; color: var(--muted);">Pay ${PREMIUM_PRICE_ETB} ETB to unlock</p>
+        <p style="font-weight: 700; font-size: 1rem; color: var(--fg); margin-bottom: 0.25rem;">Locked</p>
+        <p style="font-size: 0.75rem; color: var(--muted); text-align: center; padding: 0 0.75rem;">Included with Premium. One payment unlocks every course.</p>
       </div>
       ` : ''}
 
@@ -3075,7 +3102,7 @@ function sendChat() {
   setTimeout(() => {
     const typing = document.getElementById('typing');
     if (typing) typing.remove();
-    container.innerHTML += `<div class="chat-bubble chat-bubble-ai"><p>${chatResponses[responseKey]}</p></div>`;
+    container.innerHTML += `<div class="chat-bubble chat-bubble-ai"><p>${String(chatResponses[responseKey]).replace('{PRICE}', PREMIUM_PRICE_ETB)}</p></div>`;
     container.scrollTop = container.scrollHeight;
   }, 1200);
 }
