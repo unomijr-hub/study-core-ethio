@@ -1257,6 +1257,8 @@ function tryRefresh() {
           accessToken = null;
           currentUser = null;
           try { updateNavForUser(); } catch (e) { /* ignore */ }
+          try { showHome(); } catch (e) { /* ignore */ }
+          showToast('You were signed out. Your account may have been logged in on another device. Please log in again.', 'error');
         }
         return false;
       }
